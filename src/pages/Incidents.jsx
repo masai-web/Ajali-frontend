@@ -3,16 +3,17 @@ import axios from "axios";
 import User from "../components/User";
 import banner from "../assets/banner.jpg";
 
-
-// Create a simple axios instance with base URL
-const axiosInstance = axios.create({
-  baseURL: "https://ajali-backend-7ex3.onrender.com",
-  withCredentials: true,
-});
-
 function Incidents() {
   const [user, setUser] = useState(null);
   const [incidents, setIncidents] = useState([]);
+  const [editingId, setEditingId] = useState(null);
+  const [editFormData, setEditFormData] = useState({
+    title: "",
+    description: "",
+    latitude: "",
+    longitude: "",
+  });
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -24,35 +25,36 @@ function Incidents() {
   const token = localStorage.getItem("access_token");
 
   useEffect(() => {
-    if (!token) return; // don’t fetch if no token
+    if (!token) return;
 
-    // Set Authorization header globally for this axios instance
-    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
-
-    // Fetch current user
-    axiosInstance
-      .get("/auth/me")
+    axios
+      .get("https://ajali-backend-7ex3.onrender.com/auth/me", {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      })
       .then((res) => {
         setUser(res.data);
-
-        // Fetch incidents and filter by current user's username
-        axiosInstance
-          .get("/incidents")
-          .then((res) => {
-            const userIncidents = res.data.incidents.filter(
+        axios
+          .get("https://ajali-backend-7ex3.onrender.com/incidents", {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          })
+          .then((res2) => {
+            const userIncidents = res2.data.incidents.filter(
               (incident) => incident.reporter === res.data.username
             );
             setIncidents(userIncidents);
-          })
-          .catch((err) => console.error("Failed to fetch incidents", err));
+          });
       })
-      .catch((err) => {
-        console.error("Failed to fetch user", err);
-      });
+      .catch((err) => console.error("Failed to fetch user", err));
   }, [token]);
 
   function handleChange(e) {
     setFormData({ ...formData, [e.target.name]: e.target.value });
+  }
+
+  function handleEditChange(e) {
+    setEditFormData({ ...editFormData, [e.target.name]: e.target.value });
   }
 
   function handleSubmit(e) {
@@ -63,18 +65,51 @@ function Incidents() {
       form.append(key, formData[key]);
     }
 
-    axiosInstance
-      .post("/incidents", form, {
-        headers: { "Content-Type": "multipart/form-data" },
+    axios
+      .post("https://ajali-backend-7ex3.onrender.com/incidents", form, {
+        headers: {
+          "Content-Type": "multipart/form-data",
+          Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
       })
       .then(() => {
         alert("Incident reported successfully!");
         window.location.reload();
       })
-      .catch((err) => {
-        console.error("Incident submission failed", err);
-        alert("Failed to submit incident");
-      });
+      .catch(() => alert("Failed to submit incident"));
+  }
+
+  function handleEditClick(incident) {
+    setEditingId(incident.id);
+    setEditFormData({
+      title: incident.title,
+      description: incident.description,
+      latitude: incident.latitude,
+      longitude: incident.longitude,
+    });
+  }
+
+  function handleEditSubmit(e) {
+    e.preventDefault();
+
+    axios
+      .put(
+        `https://ajali-backend-7ex3.onrender.com/incidents/${editingId}`,
+        editFormData,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        }
+      )
+      .then(() => {
+        alert("Incident updated successfully");
+        setEditingId(null);
+        window.location.reload();
+      })
+      .catch(() => alert("Failed to update incident"));
   }
 
   return (
@@ -82,11 +117,9 @@ function Incidents() {
       <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
         Incident Reports
       </h1>
-      <div className="relative w-full h-72 mb-8 rounded-xl shadow-md overflow-hidden">
-        {/* Gray transparent overlay */}
-        <div className="absolute inset-0 bg-gray-800 bg-opacity-50 z-10"></div>
 
-        {/* Banner image */}
+      <div className="relative w-full h-36 md:h-72 mb-8 rounded-xl shadow-md overflow-hidden">
+        <div className="absolute inset-0 bg-gray-800 bg-opacity-50 z-10"></div>
         <img
           src={banner}
           alt="Incident Banner"
@@ -103,14 +136,74 @@ function Incidents() {
           {incidents.length === 0 ? (
             <p className="text-gray-500">No reports yet.</p>
           ) : (
-            <ul className="space-y-2">
+            <ul className="space-y-4">
               {incidents.map((incident) => (
                 <li
                   key={incident.id}
                   className="p-2 bg-gray-100 rounded-md hover:bg-blue-50"
                 >
-                  <p className="font-medium">{incident.title}</p>
-                  <p className="text-sm text-gray-600">{incident.status}</p>
+                  {editingId === incident.id ? (
+                    <form onSubmit={handleEditSubmit} className="space-y-2">
+                      <input
+                        type="text"
+                        name="title"
+                        value={editFormData.title}
+                        onChange={handleEditChange}
+                        className="w-full p-1 border border-gray-300 rounded"
+                      />
+                      <textarea
+                        name="description"
+                        value={editFormData.description}
+                        onChange={handleEditChange}
+                        className="w-full p-1 border border-gray-300 rounded"
+                        rows={2}
+                      />
+                      <div className="flex gap-2">
+                        <input
+                          type="text"
+                          name="latitude"
+                          value={editFormData.latitude}
+                          onChange={handleEditChange}
+                          className="w-1/2 p-1 border border-gray-300 rounded"
+                          placeholder="Lat"
+                        />
+                        <input
+                          type="text"
+                          name="longitude"
+                          value={editFormData.longitude}
+                          onChange={handleEditChange}
+                          className="w-1/2 p-1 border border-gray-300 rounded"
+                          placeholder="Lng"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <button
+                          type="submit"
+                          className="text-sm bg-green-500 text-white px-2 py-1 rounded"
+                        >
+                          Save
+                        </button>
+                        <button
+                          type="button"
+                          className="text-sm bg-gray-400 text-white px-2 py-1 rounded"
+                          onClick={() => setEditingId(null)}
+                        >
+                          Cancel
+                        </button>
+                      </div>
+                    </form>
+                  ) : (
+                    <>
+                      <p className="font-medium">{incident.title}</p>
+                      <p className="text-sm text-gray-600">{incident.status}</p>
+                      <button
+                        onClick={() => handleEditClick(incident)}
+                        className="text-xs mt-1 text-blue-500 underline"
+                      >
+                        Edit
+                      </button>
+                    </>
+                  )}
                 </li>
               ))}
             </ul>
