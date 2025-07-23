@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
-import User from "../components/User";
 import axios from "axios";
+import User from "../components/User";
+import banner from "../assets/banner.jpg";
+
+
+// Create a simple axios instance with base URL
+const axiosInstance = axios.create({
+  baseURL: "https://ajali-backend-7ex3.onrender.com",
+  withCredentials: true,
+});
 
 function Incidents() {
   const [user, setUser] = useState(null);
@@ -16,28 +24,31 @@ function Incidents() {
   const token = localStorage.getItem("access_token");
 
   useEffect(() => {
-    axios
-      .get("https://ajali-backend-7ex3.onrender.com/auth/me", {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      })
+    if (!token) return; // don’t fetch if no token
+
+    // Set Authorization header globally for this axios instance
+    axiosInstance.defaults.headers.common["Authorization"] = `Bearer ${token}`;
+
+    // Fetch current user
+    axiosInstance
+      .get("/auth/me")
       .then((res) => {
         setUser(res.data);
-        // Now fetch user's incidents
-        axios
-          .get("https://ajali-backend-7ex3.onrender.com/incidents", {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          })
+
+        // Fetch incidents and filter by current user's username
+        axiosInstance
+          .get("/incidents")
           .then((res) => {
-            // Filter incidents by logged-in user
             const userIncidents = res.data.incidents.filter(
               (incident) => incident.reporter === res.data.username
             );
             setIncidents(userIncidents);
-          });
+          })
+          .catch((err) => console.error("Failed to fetch incidents", err));
       })
-      .catch((err) => console.error("Failed to fetch user", err));
+      .catch((err) => {
+        console.error("Failed to fetch user", err);
+      });
   }, [token]);
 
   function handleChange(e) {
@@ -52,13 +63,9 @@ function Incidents() {
       form.append(key, formData[key]);
     }
 
-    axios
-      .post("https://ajali-backend-7ex3.onrender.com/incidents", form, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-          "Content-Type": "multipart/form-data",
-        },
-        withCredentials: true,
+    axiosInstance
+      .post("/incidents", form, {
+        headers: { "Content-Type": "multipart/form-data" },
       })
       .then(() => {
         alert("Incident reported successfully!");
@@ -72,9 +79,20 @@ function Incidents() {
 
   return (
     <div className="min-h-screen bg-gray-100 p-6">
-      <h1 className="text-3xl font-bold text-blue-700 mb-6 underline">
+      <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
         Incident Reports
       </h1>
+      <div className="relative w-full h-72 mb-8 rounded-xl shadow-md overflow-hidden">
+        {/* Gray transparent overlay */}
+        <div className="absolute inset-0 bg-gray-800 bg-opacity-50 z-10"></div>
+
+        {/* Banner image */}
+        <img
+          src={banner}
+          alt="Incident Banner"
+          className="w-full h-full object-cover"
+        />
+      </div>
 
       <div className="flex gap-6">
         {/* Left Sidebar - Incident History */}
@@ -100,7 +118,7 @@ function Incidents() {
         </div>
 
         {/* Right Form Area */}
-        <div className="w-3/4 bg-white p-6 rounded-xl shadow-md border border-gray-200">
+        <div className="w-3/4 bg-gray-300 p-6 rounded-xl shadow-md border border-gray-200">
           <h2 className="text-xl font-semibold text-blue-600 mb-4">
             Submit a New Incident
           </h2>
