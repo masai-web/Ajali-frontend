@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import axios from "axios";
 import { FaCheckCircle, FaTimesCircle, FaExclamationCircle, FaSearch } from "react-icons/fa";
 import Header from "../components/Header";
 
@@ -19,49 +20,53 @@ function Admin() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  const mockIncidents = [
-    {
-      id: 1,
-      title: "Car Accident on Highway",
-      description: "Multiple vehicle collision near exit 13.",
-      type: "Accident",
-      status: "pending",
-      reporter: "john_doe",
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: 2,
-      title: "Fire in Apartment",
-      description: "Reported smoke and fire on 2nd floor.",
-      type: "Fire",
-      status: "resolved",
-      reporter: "jane_doe",
-      created_at: new Date().toISOString(),
-    },
-    {
-      id: 3,
-      title: "Flooded Street",
-      description: "Water levels rising quickly in downtown area.",
-      type: "Flood",
-      status: "reviewing",
-      reporter: "admin_user",
-      created_at: new Date().toISOString(),
-    },
-  ];
+  const token = localStorage.getItem("access_token");
 
   useEffect(() => {
-    setTimeout(() => {
-      setIncidents(mockIncidents);
-      setLoading(false);
-    }, 500);
-  }, []);
+    if (!token) return;
+
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/incidents`, {
+        headers: { Authorization: `Bearer ${token}` },
+        withCredentials: true,
+      })
+      .then((res) => {
+        setIncidents(res.data.incidents);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Failed to fetch incidents", err);
+        setLoading(false);
+      });
+  }, [token]);
 
   const updateStatus = (id, newStatus) => {
-    setIncidents((prev) =>
-      prev.map((incident) =>
-        incident.id === id ? { ...incident, status: newStatus } : incident
+    if (!token) return;
+
+    axios
+      .put(
+        `${import.meta.env.VITE_API_URL}/incidents/${id}/status`,
+        { status: newStatus },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+          withCredentials: true,
+        }
       )
-    );
+      .then(() => {
+        setIncidents((prev) =>
+          prev.map((incident) =>
+            incident.id === id ? { ...incident, status: newStatus } : incident
+          )
+        );
+        alert("Status updated successfully");
+      })
+      .catch((err) => {
+        console.error("Failed to update status", err);
+        alert("Failed to update status");
+      });
   };
 
   const filtered = incidents.filter((i) =>
@@ -83,12 +88,9 @@ function Admin() {
 
   return (
     <div className="flex">
-    {/* Header */}
       <Header />
       <Sidebar />
       <div className="ml-64 w-full p-8 bg-gray-50 min-h-screen">
-      
-      
         <h1 className="text-4xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
 
         <div className="mb-6 flex items-center justify-between">
@@ -154,7 +156,5 @@ function Admin() {
     </div>
   );
 }
-
-
 
 export default Admin;

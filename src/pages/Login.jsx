@@ -1,8 +1,43 @@
-import { Link } from "react-router-dom";
+import { useState } from "react";
+import { useNavigate, Link } from "react-router-dom";
+import axios from "axios";
 import { ArrowRightIcon, EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/solid";
 import Header from "../components/Header";
 
 function Login() {
+  const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: "",
+    password: "",
+  });
+
+  const [loading, setLoading] = useState(false);
+
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    try {
+      const response = await axios.post(
+        `${import.meta.env.VITE_API_URL}/auth/login`,
+        formData,
+        {
+          withCredentials: true,
+        }
+      );
+      localStorage.setItem("access_token", response.data.access_token);
+      alert("Login successful!");
+      navigate("/incidents");
+    } catch (error) {
+      alert("Login failed. Please check your credentials.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-white py-20">
       {/* Header */}
@@ -13,7 +48,7 @@ function Login() {
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Welcome Back</h1>
           
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSubmit}>
             <div className="mb-6">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
@@ -27,6 +62,8 @@ function Login() {
                   name="email"
                   type="email"
                   required
+                  value={formData.email}
+                  onChange={handleChange}
                   className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="your@email.com"
                 />
@@ -46,6 +83,8 @@ function Login() {
                   name="password"
                   type="password"
                   required
+                  value={formData.password}
+                  onChange={handleChange}
                   className="w-full pl-10 pr-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-gray-800 placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition-all"
                   placeholder="••••••••"
                 />
@@ -75,9 +114,10 @@ function Login() {
 
             <button
               type="submit"
+              disabled={loading}
               className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow hover:shadow-lg transition-all duration-300 flex items-center justify-center"
             >
-              Sign In
+              {loading ? "Signing in..." : "Sign In"}
               <ArrowRightIcon className="w-5 h-5 ml-2" />
             </button>
           </form>
