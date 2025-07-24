@@ -4,10 +4,12 @@ import Header from "../components/Header";
 
 function Login() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white py-20">
+      {/* Header */}
       <Header />
-      
-      <main className="container mx-auto px-4 py-8 flex flex-col items-center justify-center">
+
+      {/* Add padding-top to offset header height */}
+      <main className="container mx-auto px-4 pt-24 pb-8 flex flex-col items-center justify-center">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Welcome Back</h1>
           
@@ -96,6 +98,5 @@ function Login() {
     </div>
   );
 }
-
 
 export default Login;

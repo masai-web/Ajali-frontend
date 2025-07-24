@@ -1,7 +1,8 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
+// import axios from "axios";
 import User from "../components/User";
 import banner from "../assets/banner.jpg";
+import Header from "../components/Header";
 
 function Incidents() {
   const [user, setUser] = useState(null);
@@ -113,7 +114,9 @@ function Incidents() {
   }
 
   return (
-    <div className="min-h-screen bg-gray-100 p-6">
+    <div className="min-h-screen bg-gray-100 pt-24 px-6 pb-6">
+      {/* Header */}
+      <Header />  
       <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
         Incident Reports
       </h1>

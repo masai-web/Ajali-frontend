@@ -72,7 +72,7 @@ function Home() {
           <p className="text-lg mb-6">
             Help prevent delays by reporting emergencies right from your phone.
           </p>
-          <Link to="/report">
+          <Link to="/Incidents">
             <button className="bg-white text-indigo-700 font-semibold px-6 py-3 rounded-full hover:bg-gray-100 shadow-md transition inline-flex items-center">
               Report Now <ArrowRightIcon className="w-5 h-5 ml-2" />
             </button>

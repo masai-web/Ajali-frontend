@@ -1,17 +1,26 @@
 import { Link } from "react-router-dom";
-import { ArrowRightIcon, UserCircleIcon, EnvelopeIcon, LockClosedIcon, PhoneIcon } from "@heroicons/react/24/solid";
+import {
+  ArrowRightIcon,
+  UserCircleIcon,
+  EnvelopeIcon,
+  LockClosedIcon,
+  PhoneIcon,
+} from "@heroicons/react/24/solid";
 import Header from "../components/Header";
 
 function Register() {
   return (
-    <div className="min-h-screen bg-white">
+    <div className="min-h-screen bg-white py-20">
+      {/* Header */}
       <Header />
-      
-      <main className="container mx-auto px-4 py-8 flex flex-col items-center justify-center">
+
+      {/* Push content down with padding top */}
+      <main className="container mx-auto px-4 pt-20 pb-8 flex flex-col items-center justify-center">
         <div className="w-full max-w-md bg-white rounded-2xl shadow-lg p-8 border border-gray-100">
           <h1 className="text-3xl font-bold text-center text-gray-800 mb-8">Create Account</h1>
-          
+
           <form className="space-y-6">
+            {/* Full Name */}
             <div className="mb-6">
               <label htmlFor="name" className="block text-sm font-medium text-gray-700 mb-2">
                 Full Name
@@ -31,6 +40,7 @@ function Register() {
               </div>
             </div>
 
+            {/* Email Address */}
             <div className="mb-6">
               <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
                 Email Address
@@ -50,6 +60,7 @@ function Register() {
               </div>
             </div>
 
+            {/* Phone Number */}
             <div className="mb-6">
               <label htmlFor="phone" className="block text-sm font-medium text-gray-700 mb-2">
                 Phone Number
@@ -69,6 +80,7 @@ function Register() {
               </div>
             </div>
 
+            {/* Password */}
             <div className="mb-6">
               <label htmlFor="password" className="block text-sm font-medium text-gray-700 mb-2">
                 Password
@@ -88,6 +100,7 @@ function Register() {
               </div>
             </div>
 
+            {/* Submit Button */}
             <button
               type="submit"
               className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow hover:shadow-lg transition-all duration-300 flex items-center justify-center"
@@ -100,8 +113,8 @@ function Register() {
           <div className="mt-8 text-center">
             <p className="text-gray-600">
               Already have an account?{' '}
-              <Link 
-                to="/login" 
+              <Link
+                to="/login"
                 className="text-blue-600 font-medium hover:underline underline-offset-4"
               >
                 Login here
@@ -113,6 +126,5 @@ function Register() {
     </div>
   );
 }
-
 
 export default Register;

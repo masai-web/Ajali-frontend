@@ -56,12 +56,6 @@ function Header() {
         >
           Register
         </Link>
-        <Link
-          to="/report"
-          className="font-bold text-black hover:text-transparent hover:bg-clip-text hover:bg-gradient-to-r from-blue-600 to-purple-600 transition"
-        >
-          Report
-        </Link>
 
         {/* Language Selector */}
         <select

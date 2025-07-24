@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { FaCheckCircle, FaTimesCircle, FaExclamationCircle, FaSearch } from "react-icons/fa";
+import Header from "../components/Header";
 
 const Sidebar = () => (
   <div className="bg-gray-800 text-white w-64 h-screen p-5 space-y-6 fixed">
@@ -82,8 +83,12 @@ function Admin() {
 
   return (
     <div className="flex">
+    {/* Header */}
+      <Header />
       <Sidebar />
       <div className="ml-64 w-full p-8 bg-gray-50 min-h-screen">
+      
+      
         <h1 className="text-4xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
 
         <div className="mb-6 flex items-center justify-between">
