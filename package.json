@@ -1,18 +1,23 @@
 {
-  "name": "ajali-frontend",
-  "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "name": "ajali-frontend",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider vite",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+
+    "axios": "^1.11.0",
+
     "@heroicons/react": "^2.2.0",
+    "@react-google-maps/api": "^2.20.7",
+
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-icons": "^5.5.0",
     "react-router-dom": "^7.7.0"
   },
   "devDependencies": {
@@ -26,20 +31,10 @@
     "eslint-plugin-react-refresh": "^0.4.20",
     "globals": "^16.3.0",
     "postcss": "^8.5.6",
-    "tailwindcss": "^4.1.11",
-    "vite": "^4.4.9"
-  },
-  "description": "This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.",
-  "main": "eslint.config.js",
-  "repository": {
-    "type": "git",
-    "url": "git+https://github.com/masai-web/Ajali-frontend.git"
-  },
-  "keywords": [],
-  "author": "",
-  "license": "ISC",
-  "bugs": {
-    "url": "https://github.com/masai-web/Ajali-frontend/issues"
-  },
-  "homepage": "https://github.com/masai-web/Ajali-frontend#readme"
+
+    "tailwindcss": "^3.4.17",
+
+    
+    "vite": "^7.0.4"
+  }
 }
