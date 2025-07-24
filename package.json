@@ -1,12 +1,11 @@
 {
-  "name": "ajali-frontend",
-  "private": true,
-  "version": "0.0.0",
   "type": "module",
+  "name": "ajali-frontend",
+  "version": "0.0.0",
+  "private": true,
   "scripts": {
-    "dev": "vite",
-    "build": "vite build",
-    "lint": "eslint .",
+    "dev": "NODE_OPTIONS=--openssl-legacy-provider vite",
+    "build": "NODE_OPTIONS=--openssl-legacy-provider vite build",
     "preview": "vite preview"
   },
   "dependencies": {
@@ -14,6 +13,7 @@
     "@react-google-maps/api": "^2.20.7",
     "react": "^19.1.0",
     "react-dom": "^19.1.0",
+    "react-icons": "^5.5.0",
     "react-router-dom": "^7.7.0"
   },
   "devDependencies": {
