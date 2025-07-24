@@ -12,7 +12,7 @@ function Header() {
   };
 
   return (
-    <nav className="bg-white shadow-md px-4 py-3">
+   <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md px-4 py-3">
       <div className="flex flex-col md:flex-row items-center justify-center space-y-3 md:space-y-0 md:space-x-8 w-full">
         
         {/* Logo */}
