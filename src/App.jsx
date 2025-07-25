@@ -7,6 +7,7 @@ import Admin from "./pages/Admin";
 import Incidents from "./pages/Incidents";
 import PrivateRoute from "./components/PrivateRoute";
 import SearchResults from "./pages/SearchResults";
+import About from "./pages/About";
 
 function App() {
   return (
@@ -16,6 +17,7 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/search-results" element={<SearchResults />} />
+        <Route path="/about" element={<About />} />
 
         <Route 
           path="/admin" 
@@ -33,6 +35,7 @@ function App() {
             </PrivateRoute>
           } 
         />
+        
       </Routes>
     </Router>
   );
