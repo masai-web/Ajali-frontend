@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-// import axios from "axios";
+import axios from "axios";
 import User from "../components/User";
 import banner from "../assets/banner.jpg";
 import Header from "../components/Header";
