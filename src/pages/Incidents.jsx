@@ -24,19 +24,20 @@ function Incidents() {
   });
 
   const token = localStorage.getItem("access_token");
+  const API_URL = import.meta.env.VITE_API_URL;
 
   useEffect(() => {
     if (!token) return;
 
     axios
-      .get("https://ajali-backend-7ex3.onrender.com/auth/me", {
+      .get(`${API_URL}/auth/me`, {
         headers: { Authorization: `Bearer ${token}` },
         withCredentials: true,
       })
       .then((res) => {
         setUser(res.data);
         axios
-          .get("https://ajali-backend-7ex3.onrender.com/incidents", {
+          .get(`${API_URL}/incidents`, {
             headers: { Authorization: `Bearer ${token}` },
             withCredentials: true,
           })
@@ -67,7 +68,7 @@ function Incidents() {
     }
 
     axios
-      .post("https://ajali-backend-7ex3.onrender.com/incidents", form, {
+      .post(`${API_URL}/incidents`, form, {
         headers: {
           "Content-Type": "multipart/form-data",
           Authorization: `Bearer ${token}`,
@@ -78,7 +79,10 @@ function Incidents() {
         alert("Incident reported successfully!");
         window.location.reload();
       })
-      .catch(() => alert("Failed to submit incident"));
+      .catch((err) => {
+        console.error(err);
+        alert("Failed to submit incident");
+      });
   }
 
   function handleEditClick(incident) {
@@ -95,28 +99,26 @@ function Incidents() {
     e.preventDefault();
 
     axios
-      .put(
-        `https://ajali-backend-7ex3.onrender.com/incidents/${editingId}`,
-        editFormData,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        }
-      )
+      .put(`${API_URL}/incidents/${editingId}`, editFormData, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      })
       .then(() => {
         alert("Incident updated successfully");
         setEditingId(null);
         window.location.reload();
       })
-      .catch(() => alert("Failed to update incident"));
+      .catch((err) => {
+        console.error(err);
+        alert("Failed to update incident");
+      });
   }
 
   return (
     <div className="min-h-screen bg-gray-100 pt-24 px-6 pb-6">
-      {/* Header */}
-      <Header />  
+      <Header />
       <h1 className="text-3xl font-bold text-blue-700 mb-6 text-center">
         Incident Reports
       </h1>
@@ -131,11 +133,9 @@ function Incidents() {
       </div>
 
       <div className="flex gap-6">
-        {/* Left Sidebar - Incident History */}
+        {/* Incident History */}
         <div className="w-1/4 bg-white p-4 rounded-xl shadow-md border border-gray-200">
-          <h2 className="text-xl font-semibold text-blue-600 mb-4">
-            My Reports
-          </h2>
+          <h2 className="text-xl font-semibold text-blue-600 mb-4">My Reports</h2>
           {incidents.length === 0 ? (
             <p className="text-gray-500">No reports yet.</p>
           ) : (
@@ -213,7 +213,7 @@ function Incidents() {
           )}
         </div>
 
-        {/* Right Form Area */}
+        {/* Submit Incident Form */}
         <div className="w-3/4 bg-gray-300 p-6 rounded-xl shadow-md border border-gray-200">
           <h2 className="text-xl font-semibold text-blue-600 mb-4">
             Submit a New Incident
@@ -276,7 +276,6 @@ function Incidents() {
         </div>
       </div>
 
-      {/* Optional user info component */}
       <div className="mt-10">
         <User user={user} />
       </div>
@@ -285,5 +284,3 @@ function Incidents() {
 }
 
 export default Incidents;
-
-

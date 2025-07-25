@@ -1,4 +1,5 @@
-import React, { useState, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
+import axios from "axios";
 import { GoogleMap, LoadScript, Marker } from "@react-google-maps/api";
 
 const containerStyle = {
@@ -12,23 +13,23 @@ const center = {
   lng: 36.8219,
 };
 
-const incidents = [
-  {
-    title: "Accident on Ngong Road",
-    latitude: -1.3000,
-    longitude: 36.8000,
-  },
-  {
-    title: "Fire near CBD",
-    latitude: -1.2921,
-    longitude: 36.8219,
-  },
-];
-
 const IncidentMap = () => {
   const [mapType, setMapType] = useState("roadmap");
   const [zoom, setZoom] = useState(12);
   const [mapRef, setMapRef] = useState(null);
+  const [incidents, setIncidents] = useState([]);
+
+  // Load incident data from backend
+  useEffect(() => {
+    axios
+      .get("http://localhost:5555/incidents") // Replace with your deployed URL if needed
+      .then((res) => {
+        setIncidents(res.data.incidents);
+      })
+      .catch((err) => {
+        console.error("Failed to load incidents:", err);
+      });
+  }, []);
 
   const onLoad = useCallback((map) => {
     setMapRef(map);
@@ -60,15 +61,15 @@ const IncidentMap = () => {
           options={{
             streetViewControl: false,
             fullscreenControl: false,
-            styles: [], // Clear dark theme
+            styles: [],
           }}
         >
           {incidents.map((incident, index) => (
             <Marker
               key={index}
               position={{
-                lat: incident.latitude,
-                lng: incident.longitude,
+                lat: parseFloat(incident.latitude),
+                lng: parseFloat(incident.longitude),
               }}
               title={incident.title}
             />

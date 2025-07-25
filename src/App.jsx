@@ -5,6 +5,8 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import Incidents from "./pages/Incidents";
+import PrivateRoute from "./components/PrivateRoute";
+import SearchResults from "./pages/SearchResults";
 
 function App() {
   return (
@@ -13,12 +15,27 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/admin" element={<Admin />} />
-        <Route path="/incidents" element={<Incidents />} />
+        <Route path="/search-results" element={<SearchResults />} />
+
+        <Route 
+          path="/admin" 
+          element={
+            <PrivateRoute>
+              <Admin />
+            </PrivateRoute>
+          } 
+        />
+        <Route 
+          path="/incidents" 
+          element={
+            <PrivateRoute>
+              <Incidents />
+            </PrivateRoute>
+          } 
+        />
       </Routes>
     </Router>
   );
 }
 
 export default App;
-
