@@ -30,6 +30,7 @@ function App() {
             </PrivateRoute>
           } 
         />
+        
       </Routes>
     </Router>
   );
