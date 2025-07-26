@@ -6,7 +6,6 @@ import Login from "./pages/Login";
 import Admin from "./pages/Admin";
 import Incidents from "./pages/Incidents";
 import PrivateRoute from "./components/PrivateRoute";
-import SearchResults from "./pages/SearchResults";
 
 function App() {
   return (
@@ -15,8 +14,6 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route path="/search-results" element={<SearchResults />} />
-
         <Route 
           path="/admin" 
           element={
