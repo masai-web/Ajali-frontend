@@ -28,9 +28,22 @@ function Login() {
           withCredentials: true,
         }
       );
-      localStorage.setItem("access_token", response.data.access_token);
-      alert("Login successful!");
-      navigate("/incidents");
+      const { access_token } = response.data;
+      localStorage.setItem("access_token", access_token);
+
+      // Check if admin
+      if (
+        formData.email === "user1@example.com" &&
+        formData.password === "password1"
+      ) {
+        alert("Admin login successful!");
+        navigate("/admin");
+      } else {
+        alert("Login successful!");
+        navigate("/incidents");
+      }
+
+
     } catch (error) {
       alert("Login failed. Please check your credentials.");
     } finally {
