@@ -19,10 +19,9 @@ const IncidentMap = () => {
   const [mapRef, setMapRef] = useState(null);
   const [incidents, setIncidents] = useState([]);
 
-  // Load incident data from backend
   useEffect(() => {
     axios
-      .get("http://localhost:5555/incidents") // Replace with your deployed URL if needed
+      .get("http://localhost:5555/incidents")
       .then((res) => {
         setIncidents(res.data.incidents);
       })
@@ -77,7 +76,6 @@ const IncidentMap = () => {
         </GoogleMap>
       </LoadScript>
 
-      {/* Controls */}
       <div className="absolute top-4 left-4 z-10 bg-white p-3 rounded shadow-md space-y-2">
         <div className="font-bold text-sm mb-1">Map Type</div>
         {["roadmap", "satellite", "hybrid", "terrain"].map((type) => (
