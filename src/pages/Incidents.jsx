@@ -11,6 +11,13 @@ function Incidents() {
   const [editingIncident, setEditingIncident] = useState(null);
   const navigate = useNavigate();
 
+  const [allIncidents, setAllIncidents] = useState([]);
+  const [loadingAllIncidents, setLoadingAllIncidents] = useState(false);
+  const [filters, setFilters] = useState({
+  status: '',
+  type: ''
+  });
+
   const [formData, setFormData] = useState({
     title: "",
     description: "",
@@ -194,6 +201,44 @@ function Incidents() {
     }
   };
 
+
+  const fetchAllIncidents = async () => {
+    setLoadingAllIncidents(true);
+    try {
+      const params = new URLSearchParams();
+      if (filters.status) params.append('status', filters.status);
+      if (filters.type) params.append('type', filters.type);
+      
+      const res = await axios.get(
+        `${API_URL}/incidents/all?${params.toString()}`,
+        {
+          headers: { Authorization: `Bearer ${token}` },
+          withCredentials: true,
+        }
+      );
+      setAllIncidents(res.data.incidents);
+    } catch (err) {
+      toast.error("Failed to fetch all incidents");
+      console.error(err);
+    } finally {
+      setLoadingAllIncidents(false);
+    }
+  };
+
+  useEffect(() => {
+    if (activeTab === "allreports") {
+      fetchAllIncidents();
+    }
+  }, [activeTab, filters.status, filters.type]);
+
+  const handleFilterChange = (e) => {
+    setFilters({
+      ...filters,
+      [e.target.name]: e.target.value
+    });
+  };
+
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
@@ -238,6 +283,19 @@ function Incidents() {
                 }`}></i>
                 My Reports
               </button>
+              <button
+                onClick={() => setActiveTab("allreports")}
+                className={`flex items-center w-full px-4 py-3 rounded-lg transition-colors group ${
+                  activeTab === "allreports"
+                    ? "bg-gray-700 text-white"
+                    : "text-gray-300 hover:bg-gray-700 hover:text-white"
+                }`}
+              >
+                <i className={`fas fa-globe mr-3 ${
+                  activeTab === "allreports" ? "text-white" : "text-gray-400 group-hover:text-white"
+                }`}></i>
+                All Incidents
+              </button>
             </div>
           </nav>
           
@@ -274,14 +332,18 @@ function Incidents() {
             <div className="px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                  <h1 className="text-2xl font-semibold text-gray-900">
-                    {activeTab === "report" ? "Report New Incident" : "My Incident Reports"}
-                  </h1>
-                  <p className="text-gray-600 text-sm mt-1">
-                    {activeTab === "report" 
-                      ? "Submit details about the incident" 
-                      : "View and manage your reported incidents"}
-                  </p>
+                <h1 className="text-2xl font-semibold text-gray-900">
+                  {activeTab === "report" ? "Report New Incident" : 
+                  activeTab === "myreports" ? "My Incident Reports" : 
+                  "All Incident Reports"}
+                </h1>
+                <p className="text-gray-600 text-sm mt-1">
+                  {activeTab === "report" 
+                    ? "Submit details about the incident" 
+                    : activeTab === "myreports"
+                    ? "View and manage your reported incidents"
+                    : "View all incidents reported in the system"}
+                </p>
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="relative">
@@ -489,6 +551,104 @@ function Incidents() {
                 </div>
               </div>
             )}
+
+            {activeTab === "allreports" && (
+              <div className="bg-white rounded-xl shadow-sm border border-gray-200">
+                <div className="px-6 py-4 border-b border-gray-200">
+                  <div className="flex items-center justify-between">
+                    <div>
+                      {/* <h3 className="text-xl font-semibold text-gray-900">All Incident Reports</h3>
+                      <p className="text-gray-600 text-sm">View all incidents reported in the system</p> */}
+                    </div>
+                    <div className="flex space-x-3">
+                      <select 
+                        name="status"
+                        value={filters.status}
+                        onChange={handleFilterChange}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      >
+                        <option value="">All Statuses</option>
+                        <option value="reported">Reported</option>
+                        <option value="in_progress">In Progress</option>
+                        <option value="resolved">Resolved</option>
+                      </select>
+                      <select 
+                        name="type"
+                        value={filters.type}
+                        onChange={handleFilterChange}
+                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                      >
+                        <option value="">All Types</option>
+                        <option value="Fire">Fire</option>
+                        <option value="Accident">Accident</option>
+                        <option value="Crime">Crime</option>
+                        <option value="Natural Disaster">Natural Disaster</option>
+                        <option value="Other">Other</option>
+                      </select>
+                    </div>
+                  </div>
+                </div>
+                
+                <div className="overflow-x-auto">
+                  {loadingAllIncidents ? (
+                    <div className="p-6 text-center text-gray-600">
+                      <i className="fas fa-spinner fa-spin mr-2"></i> Loading incidents...
+                    </div>
+                  ) : allIncidents.length === 0 ? (
+                    <div className="p-6 text-center text-gray-600">
+                      No incidents found matching your filters.
+                    </div>
+                  ) : (
+                    <table className="w-full">
+                      <thead className="bg-gray-50">
+                        <tr>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reporter</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
+                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        </tr>
+                      </thead>
+                      <tbody className="bg-white divide-y divide-gray-200">
+                        {allIncidents.map((incident) => (
+                          <tr key={incident.id} className="hover:bg-gray-50">
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm font-medium text-gray-900">{incident.title}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{incident.type}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(incident.status)}`}>
+                                {incident.status}
+                              </span>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-900">{incident.reporter}</div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap">
+                              <div className="text-sm text-gray-500">
+                                {new Date(incident.created_at).toLocaleString()}
+                              </div>
+                            </td>
+                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
+                              <button 
+                                onClick={() => viewMedia(incident.id)}
+                                className="text-blue-600 hover:text-blue-800"
+                              >
+                                <i className="fas fa-eye"></i>
+                              </button>
+                            </td>
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  )}
+                </div>
+              </div>
+            )}
+
           </main>
         </div>
       </div>
