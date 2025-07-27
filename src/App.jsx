@@ -7,6 +7,9 @@ import Admin from "./pages/Admin";
 import Incidents from "./pages/Incidents";
 import PrivateRoute from "./components/PrivateRoute";
 import SearchResults from "./pages/SearchResults";
+import Contact from "./pages/Contact"; 
+
+
 
 function App() {
   return (
@@ -16,6 +19,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/search-results" element={<SearchResults />} />
+        <Route path="/contact" element={<Contact />} />
+
 
         <Route 
           path="/admin" 

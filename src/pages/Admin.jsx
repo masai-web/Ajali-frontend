@@ -1,10 +1,12 @@
 import { useEffect, useState } from "react";
 import axios from "axios";
 import { FaCheckCircle, FaTimesCircle, FaExclamationCircle, FaSearch } from "react-icons/fa";
+
 import Header from "../components/Header";
+import Footer from "../components/Footer";
 
 const Sidebar = () => (
-  <div className="bg-gray-800 text-white w-64 h-screen p-5 space-y-6 fixed">
+  <div className="bg-gray-800 text-white w-64 h-full p-5 space-y-6 fixed top-0 left-0 pt-20">
     <h1 className="text-2xl font-bold mb-10">Admin Panel</h1>
     <nav className="space-y-4">
       <a href="#" className="block hover:text-yellow-400">Dashboard</a>
@@ -87,72 +89,78 @@ function Admin() {
   };
 
   return (
-    <div className="flex">
+    <div className="flex min-h-screen flex-col">
       <Header />
-      <Sidebar />
-      <div className="ml-64 w-full p-8 bg-gray-50 min-h-screen">
-        <h1 className="text-4xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
+      <div className="flex flex-1">
+        <Sidebar />
+        <main className="ml-64 w-full p-8 bg-gray-50 flex flex-col">
+          <h1 className="text-4xl font-bold mb-6 text-gray-800">Admin Dashboard</h1>
 
-        <div className="mb-6 flex items-center justify-between">
-          <div className="relative">
-            <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
-            <input
-              type="text"
-              placeholder="Search by title..."
-              className="pl-10 pr-4 py-2 border rounded-md w-72 shadow-sm"
-              value={search}
-              onChange={(e) => setSearch(e.target.value)}
-            />
+          <div className="mb-6 flex items-center justify-between">
+            <div className="relative">
+              <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+              <input
+                type="text"
+                placeholder="Search by title..."
+                className="pl-10 pr-4 py-2 border rounded-md w-72 shadow-sm"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+              />
+            </div>
           </div>
-        </div>
 
-        {loading ? (
-          <p>Loading data...</p>
-        ) : (
-          <div className="overflow-auto bg-white rounded-lg shadow">
-            <table className="w-full text-sm">
-              <thead className="bg-gray-100">
-                <tr>
-                  <th className="text-left p-3">Title</th>
-                  <th className="text-left p-3">Status</th>
-                  <th className="text-left p-3">Type</th>
-                  <th className="text-left p-3">Reporter</th>
-                  <th className="text-left p-3">Date</th>
-                  <th className="text-left p-3">Action</th>
-                </tr>
-              </thead>
-              <tbody>
-                {filtered.map((incident) => (
-                  <tr key={incident.id} className="border-t hover:bg-gray-50">
-                    <td className="p-3 font-medium text-gray-800">{incident.title}</td>
-                    <td className="p-3 capitalize">
-                      {getStatusIcon(incident.status)}{" "}
-                      <span className="ml-1">{incident.status}</span>
-                    </td>
-                    <td className="p-3">{incident.type}</td>
-                    <td className="p-3">{incident.reporter}</td>
-                    <td className="p-3">
-                      {new Date(incident.created_at).toLocaleString()}
-                    </td>
-                    <td className="p-3">
-                      <select
-                        className="border p-1 rounded-md bg-gray-50"
-                        value={incident.status}
-                        onChange={(e) => updateStatus(incident.id, e.target.value)}
-                      >
-                        <option value="pending">Pending</option>
-                        <option value="reviewing">Reviewing</option>
-                        <option value="resolved">Resolved</option>
-                        <option value="dismissed">Dismissed</option>
-                      </select>
-                    </td>
+          {loading ? (
+            <p>Loading data...</p>
+          ) : (
+            <div className="overflow-auto bg-white rounded-lg shadow">
+              <table className="w-full text-sm">
+                <thead className="bg-gray-100">
+                  <tr>
+                    <th className="text-left p-3">Title</th>
+                    <th className="text-left p-3">Status</th>
+                    <th className="text-left p-3">Type</th>
+                    <th className="text-left p-3">Reporter</th>
+                    <th className="text-left p-3">Date</th>
+                    <th className="text-left p-3">Action</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
-        )}
+                </thead>
+                <tbody>
+                  {filtered.map((incident) => (
+                    <tr key={incident.id} className="border-t hover:bg-gray-50">
+                      <td className="p-3 font-medium text-gray-800">{incident.title}</td>
+                      <td className="p-3 capitalize">
+                        {getStatusIcon(incident.status)}{" "}
+                        <span className="ml-1">{incident.status}</span>
+                      </td>
+                      <td className="p-3">{incident.type}</td>
+                      <td className="p-3">{incident.reporter}</td>
+                      <td className="p-3">
+                        {new Date(incident.created_at).toLocaleString()}
+                      </td>
+                      <td className="p-3">
+                        <select
+                          className="border p-1 rounded-md bg-gray-50"
+                          value={incident.status}
+                          onChange={(e) =>
+                            updateStatus(incident.id, e.target.value)
+                          }
+                        >
+                          <option value="pending">Pending</option>
+                          <option value="reviewing">Reviewing</option>
+                          <option value="resolved">Resolved</option>
+                          <option value="dismissed">Dismissed</option>
+                        </select>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </main>
       </div>
+
+      <Footer />
     </div>
   );
 }
