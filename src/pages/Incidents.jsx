@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
+import { toast } from "react-toastify";
 
 function Incidents() {
   const [user, setUser] = useState(null);
@@ -96,7 +97,7 @@ function Incidents() {
         withCredentials: true,
       })
       .then(() => {
-        alert("Incident reported successfully!");
+        toast.success("Incident reported successfully!");
         setFormData({
           title: "",
           description: "",
@@ -116,7 +117,7 @@ function Incidents() {
       })
       .catch((err) => {
         console.error(err);
-        alert("Failed to submit incident");
+        toast.error("Failed to submit incident");
       });
   }
 
@@ -155,7 +156,7 @@ function Incidents() {
       .then((res2) => setIncidents(res2.data.incidents))
       .catch((err) => {
         console.error(err);
-        alert("Failed to update incident");
+        toast.error("Failed to update incident");
       });
   }
 
@@ -174,7 +175,7 @@ function Incidents() {
       setShowMediaModal(true);
     } catch (err) {
       console.error("Failed to fetch media", err);
-      alert("Unable to load media");
+      toast.error("Unable to load media");
     }
   };
 

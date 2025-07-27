@@ -3,6 +3,8 @@ import { useNavigate, Link } from "react-router-dom";
 import axios from "axios";
 import { ArrowRightIcon, EnvelopeIcon, LockClosedIcon } from "@heroicons/react/24/solid";
 import Header from "../components/Header";
+import { toast } from "react-toastify";
+
 
 function Login() {
   const navigate = useNavigate();
@@ -36,16 +38,16 @@ function Login() {
         formData.email === "user1@example.com" &&
         formData.password === "password1"
       ) {
-        alert("Admin login successful!");
+        toast.success("Admin login successful!");
         navigate("/admin");
       } else {
-        alert("Login successful!");
+        toast.success("Login successful!");
         navigate("/incidents");
       }
 
 
     } catch (error) {
-      alert("Login failed. Please check your credentials.");
+      toast.error("Login failed. Please check your credentials.");
     } finally {
       setLoading(false);
     }
