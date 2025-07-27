@@ -1,12 +1,58 @@
-# React + Vite
+# Ajali - Emergency Reporting System
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
-Currently, two official plugins are available:
+A real-time emergency reporting platform that allows users to report incidents and authorities to monitor and respond efficiently.
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Babel](https://babeljs.io/) for Fast Refresh
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/) for Fast Refresh
+Features
 
-## Expanding the ESLint configuration
+- 🚨 Real-time incident reporting with location tracking
+- 📱 Mobile-responsive interface
+- 🗺️ Interactive incident map visualization
+- 🔐 Secure user authentication (Login/Register)
+- 👮 Admin dashboard for incident management
+- 📊 Analytics and reporting tools
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+Technologies Used
+
+- Frontend: 
+  - React 
+  - Vite 
+  - Tailwind CSS 3
+  - React Router 7
+  - React Icons
+  - Google Maps API
+
+- Backend: *( connected)*
+  - Node.js/Express or your preferred backend
+  
+
+ Installation
+
+1. Clone the repository
+   ```bash
+   git clone https://github.com/yourusername/ajali-frontend.git
+   cd ajali-frontend
+
+  2.Install dependencies
+      npm install
+# or
+      yarn install
+
+  3.Environment Setup
+  pipenv install and pipenv shell
+
+  4.Run the development server
+      npm run dev
+
+     Project Structure 
+
+     ajali-frontend/
+├── src/
+│   ├── components/       # Reusable components
+│   ├── pages/            # Application pages
+│   ├── assets/           # Static assets
+│   ├── App.jsx           # Main application
+│   └── main.jsx          # Entry point
+├── public/               # Public assets
+├── vite.config.js        # Vite configuration
+└── package.json

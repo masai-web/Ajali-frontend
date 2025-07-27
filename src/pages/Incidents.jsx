@@ -423,9 +423,9 @@ function Incidents() {
                       <p className="text-gray-600 text-sm">View and manage your reported incidents</p>
                     </div>
                     <div className="flex space-x-3">
-                      <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
+                      {/* <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
                         <i className="fas fa-download mr-2"></i>Export
-                      </button>
+                      </button> */}
                     </div>
                   </div>
                 </div>

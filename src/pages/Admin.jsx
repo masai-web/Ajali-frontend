@@ -252,6 +252,22 @@ function Admin() {
       console.error("Error fetching users:", err);
     }
   };
+  const deleteUser = async (userId) => {
+  if (!window.confirm("Are you sure you want to delete this user?")) return;
+
+  try {
+    await axios.delete(`${import.meta.env.VITE_API_URL}/auth/users/${userId}`, {
+      headers: { Authorization: `Bearer ${token}` },
+      withCredentials: true,
+    });
+
+    // Refresh the user list
+    fetchUsers();
+  } catch (err) {
+    console.error("Failed to delete user:", err);
+    alert(err.response?.data?.message || "Error deleting user.");
+  }
+  };
 
   useEffect(() => {
     if (!token) {
@@ -552,10 +568,10 @@ function Admin() {
                             </span>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                            <button className="text-blue-600 hover:text-blue-800 mr-3">
-                              Edit
-                            </button>
-                            <button className="text-red-600 hover:text-red-800">
+                            <button
+                              onClick={() => deleteUser(user.id)}
+                              className="text-red-600 hover:text-red-800"
+                            >
                               Delete
                             </button>
                           </td>
@@ -571,7 +587,7 @@ function Admin() {
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                 <h2 className="text-xl font-semibold text-gray-900 mb-6">System Settings</h2>
                 <div className="space-y-6">
-                  <div>
+                  {/* <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3">Notification Settings</h3>
                     <div className="space-y-4">
                       <div className="flex items-center">
@@ -587,7 +603,7 @@ function Admin() {
                         </label>
                       </div>
                     </div>
-                  </div>
+                  </div> */}
 
                   <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3">System Preferences</h3>
