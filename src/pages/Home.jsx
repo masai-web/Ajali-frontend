@@ -1,18 +1,35 @@
+import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowRightIcon } from "@heroicons/react/24/solid";
+import axios from "axios";
 
 import Header from "../components/Header";
-
 import IncidentMap from "../components/IncidentMap";
 
 function Home() {
+  const [incidents, setIncidents] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    axios
+      .get(`${import.meta.env.VITE_API_URL}/incidents`)
+      .then((res) => {
+        setIncidents(res.data.incidents || []);
+        setLoading(false);
+      })
+      .catch((err) => {
+        console.error("Error fetching incidents:", err);
+        setLoading(false);
+      });
+  }, []);
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-800 to-indigo-900 text-white flex flex-col">
       {/* Header */}
       <Header />
 
       {/* Add padding to push content below the fixed header */}
-      <main className="pt-20"> {/* Adjust padding as needed based on your Header height */}
+      <main className="pt-20">
         {/* Hero Section */}
         <header className="flex flex-col items-center justify-center text-center px-4 py-12 md:py-10">
           <h1 className="text-4xl md:text-6xl font-extrabold leading-tight mb-6">
@@ -37,33 +54,37 @@ function Home() {
 
         {/* Features Section */}
         <section className="bg-white text-gray-800 py-32 px-6 md:px-40">
-        <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why Choose Ajali?</h2>
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
-          <div className="bg-gray-50 p-6 rounded-xl shadow-md text-center">
-            <h3 className="text-xl font-semibold mb-2">Real-Time Reporting</h3>
-            <p className="text-gray-600">
-              Instantly share accident or emergency details with accurate location and media support.
-            </p>
+          <h2 className="text-3xl md:text-4xl font-bold text-center mb-12">Why Choose Ajali?</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
+            <div className="bg-gray-50 p-6 rounded-xl shadow-md text-center">
+              <h3 className="text-xl font-semibold mb-2">Real-Time Reporting</h3>
+              <p className="text-gray-600">
+                Instantly share accident or emergency details with accurate location and media support.
+              </p>
+            </div>
+            <div className="bg-gray-50 p-6 rounded-xl shadow-md text-center">
+              <h3 className="text-xl font-semibold mb-2">Smart Notifications</h3>
+              <p className="text-gray-600">
+                Stay informed with automated email or SMS notifications for status updates.
+              </p>
+            </div>
+            <div className="bg-gray-50 p-6 rounded-xl shadow-md text-center">
+              <h3 className="text-xl font-semibold mb-2">Admin Dashboard</h3>
+              <p className="text-gray-600">
+                Authorities can update incident statuses and monitor trends efficiently.
+              </p>
+            </div>
           </div>
-          <div className="bg-gray-50 p-6 rounded-xl shadow-md text-center">
-            <h3 className="text-xl font-semibold mb-2">Smart Notifications</h3>
-            <p className="text-gray-600">
-              Stay informed with automated email or SMS notifications for status updates.
-            </p>
-          </div>
-          <div className="bg-gray-50 p-6 rounded-xl shadow-md text-center">
-            <h3 className="text-xl font-semibold mb-2">Admin Dashboard</h3>
-            <p className="text-gray-600">
-              Authorities can update incident statuses and monitor trends efficiently.
-            </p>
-          </div>
-        </div>
-      </section>
+        </section>
 
         {/* Live Incident Map */}
         <section className="px-4 pb-12">
           <h2 className="text-2xl font-bold text-center text-white mb-6">Live Incident Map</h2>
-          <IncidentMap />
+          {loading ? (
+            <p className="text-center text-white">Loading map...</p>
+          ) : (
+            <IncidentMap incidents={incidents} />
+          )}
         </section>
 
         {/* CTA */}
@@ -89,4 +110,3 @@ function Home() {
 }
 
 export default Home;
-
