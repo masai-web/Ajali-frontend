@@ -1,4 +1,5 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
 
 import Home from "./pages/Home";
 import Register from "./pages/Register";
@@ -10,27 +11,27 @@ import PrivateRoute from "./components/PrivateRoute";
 function App() {
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
-        <Route 
-          path="/admin" 
+        <Route
+          path="/admin"
           element={
             <PrivateRoute>
               <Admin />
             </PrivateRoute>
-          } 
+          }
         />
-        <Route 
-          path="/incidents" 
+        <Route
+          path="/incidents"
           element={
             <PrivateRoute>
               <Incidents />
             </PrivateRoute>
-          } 
+          }
         />
-        
       </Routes>
     </Router>
   );

@@ -18,6 +18,10 @@ import {
 } from "react-icons/fa";
 import { useNavigate, Link } from "react-router-dom";
 import { getLocationName } from "../utils/geocode";
+import { toast } from "react-toastify";
+import Swal from "sweetalert2";
+
+
 
 function Header() {
   const [language, setLanguage] = useState("en");
@@ -308,18 +312,36 @@ function Admin() {
   };
 
   const deleteIncident = async (incidentId) => {
-    if (!window.confirm("Are you sure you want to delete this incident?")) return;
+    const result = await Swal.fire({
+      title: "Are you sure?",
+      text: "Do you really want to delete this incident? This action cannot be undone.",
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#d33",
+      cancelButtonColor: "#3085d6",
+      confirmButtonText: "Yes, delete it!",
+      cancelButtonText: "Cancel",
+    });
 
-    try {
-      await axios.delete(`${import.meta.env.VITE_API_URL}/incidents/${incidentId}`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      });
-
-      setIncidents((prev) => prev.filter((i) => i.id !== incidentId));
-    } catch (err) {
-      console.error("Failed to delete incident:", err);
-      alert("Error deleting incident.");
+    if (result.isConfirmed) {
+      try {
+        await axios.delete(
+          `${import.meta.env.VITE_API_URL}/incidents/${incidentId}`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+            withCredentials: true,
+          }
+        );
+        setIncidents((prev) => prev.filter((i) => i.id !== incidentId));
+        Swal.fire("Deleted!", "The incident has been deleted.", "success");
+      } catch (err) {
+        console.error("Failed to delete incident:", err);
+        Swal.fire(
+          "Error",
+          "Failed to delete incident. Please try again.",
+          "error"
+        );
+      }
     }
   };
 

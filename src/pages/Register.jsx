@@ -3,6 +3,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { ArrowRightIcon, UserCircleIcon, EnvelopeIcon, LockClosedIcon, PhoneIcon } from "@heroicons/react/24/solid";
 import Header from "../components/Header";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 function Register() {
   const navigate = useNavigate();
@@ -38,7 +39,7 @@ function Register() {
         }
       );
 
-      alert("Registration successful!");
+      toast.success("Registration successful!");
       navigate("/login");
     } catch (err) {
       console.error(err);
