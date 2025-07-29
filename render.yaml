@@ -1,0 +1,11 @@
+services:
+  - type: web
+    name: ajali-frontend
+    runtime: node
+    repo: https://github.com/masai-web/Ajali-frontend
+    branch: main
+    buildCommand: npm run build
+    startCommand: npm run preview
+    envVars:
+      - key: NODE_VERSION
+        value: 18
