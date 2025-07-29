@@ -16,7 +16,8 @@ function Contact() {
           </p>
         </div>
       </main>
-      <Footer />
+      {/* Removed Footer component */}
+  
     </div>
   );
 }

@@ -1,9 +1,11 @@
 import React from "react";
 import about from "../assets/about.jpg";
+import Header from "../components/Header";
 
 const About = () => {
   return (
     <div className="min-h-screen bg-white text-gray-800">
+      <Header/>
       {/* Banner Section */}
       <div className="relative w-full h-[290px] mb-8">
         <img
