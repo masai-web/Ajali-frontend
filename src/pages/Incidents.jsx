@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
@@ -10,6 +10,7 @@ function Incidents() {
   const [activeTab, setActiveTab] = useState("report");
   const [editingIncident, setEditingIncident] = useState(null);
   const navigate = useNavigate();
+  const modalRef = useRef();
 
   const [allIncidents, setAllIncidents] = useState([]);
   const [loadingAllIncidents, setLoadingAllIncidents] = useState(false);
@@ -38,6 +39,23 @@ function Incidents() {
 
   const token = localStorage.getItem("access_token");
   const API_URL = import.meta.env.VITE_API_URL;
+  
+ useEffect(() => {
+   const handleOutsideClick = (e) => {
+     if (
+       showMediaModal &&
+       modalRef.current &&
+       !modalRef.current.contains(e.target)
+     ) {
+       setShowMediaModal(false);
+     }
+   };
+
+   document.addEventListener("mousedown", handleOutsideClick);
+   return () => {
+     document.removeEventListener("mousedown", handleOutsideClick);
+   };
+ }, [showMediaModal]);
 
   useEffect(() => {
     if (!token) {
@@ -242,7 +260,7 @@ function Incidents() {
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <div className="flex pt-16">
         {/* Sidebar */}
         <div className="fixed inset-y-0 left-0 w-64 bg-gray-800 shadow-xl z-40">
@@ -254,7 +272,7 @@ function Incidents() {
               <span className="text-white text-xl font-bold">Welcome</span>
             </div>
           </div>
-          
+
           <nav className="mt-8 px-4">
             <div className="space-y-2">
               <button
@@ -265,9 +283,13 @@ function Incidents() {
                     : "text-gray-300 hover:bg-gray-700 hover:text-white"
                 }`}
               >
-                <i className={`fas fa-plus mr-3 ${
-                  activeTab === "report" ? "text-white" : "text-gray-400 group-hover:text-white"
-                }`}></i>
+                <i
+                  className={`fas fa-plus mr-3 ${
+                    activeTab === "report"
+                      ? "text-white"
+                      : "text-gray-400 group-hover:text-white"
+                  }`}
+                ></i>
                 Report Incident
               </button>
               <button
@@ -278,9 +300,13 @@ function Incidents() {
                     : "text-gray-300 hover:bg-gray-700 hover:text-white"
                 }`}
               >
-                <i className={`fas fa-list mr-3 ${
-                  activeTab === "myreports" ? "text-white" : "text-gray-400 group-hover:text-white"
-                }`}></i>
+                <i
+                  className={`fas fa-list mr-3 ${
+                    activeTab === "myreports"
+                      ? "text-white"
+                      : "text-gray-400 group-hover:text-white"
+                  }`}
+                ></i>
                 My Reports
               </button>
               <button
@@ -291,21 +317,25 @@ function Incidents() {
                     : "text-gray-300 hover:bg-gray-700 hover:text-white"
                 }`}
               >
-                <i className={`fas fa-globe mr-3 ${
-                  activeTab === "allreports" ? "text-white" : "text-gray-400 group-hover:text-white"
-                }`}></i>
+                <i
+                  className={`fas fa-globe mr-3 ${
+                    activeTab === "allreports"
+                      ? "text-white"
+                      : "text-gray-400 group-hover:text-white"
+                  }`}
+                ></i>
                 All Incidents
               </button>
             </div>
           </nav>
-          
+
           <div className="absolute bottom-4 left-4 right-4">
             <div className="bg-gray-700 rounded-lg p-4">
               <div className="flex items-center space-x-3">
-                <img 
-                  src="https://cdn-icons-png.flaticon.com/512/17003/17003310.png" 
-                  alt="User" 
-                  className="w-10 h-10 rounded-full" 
+                <img
+                  src="https://cdn-icons-png.flaticon.com/512/17003/17003310.png"
+                  alt="User"
+                  className="w-10 h-10 rounded-full"
                 />
                 <div>
                   <p className="text-white text-sm font-medium">
@@ -314,7 +344,7 @@ function Incidents() {
                   <p className="text-gray-400 text-xs">User</p>
                 </div>
               </div>
-              <button 
+              <button
                 onClick={handleLogout}
                 className="w-full mt-3 px-3 py-2 bg-red-600 hover:bg-red-700 text-white text-sm rounded-lg transition-colors flex items-center justify-center"
               >
@@ -332,32 +362,36 @@ function Incidents() {
             <div className="px-6 py-4">
               <div className="flex items-center justify-between">
                 <div>
-                <h1 className="text-2xl font-semibold text-gray-900">
-                  {activeTab === "report" ? "Report New Incident" : 
-                  activeTab === "myreports" ? "My Incident Reports" : 
-                  "All Incident Reports"}
-                </h1>
-                <p className="text-gray-600 text-sm mt-1">
-                  {activeTab === "report" 
-                    ? "Submit details about the incident" 
-                    : activeTab === "myreports"
-                    ? "View and manage your reported incidents"
-                    : "View all incidents reported in the system"}
-                </p>
+                  <h1 className="text-2xl font-semibold text-gray-900">
+                    {activeTab === "report"
+                      ? "Report New Incident"
+                      : activeTab === "myreports"
+                      ? "My Incident Reports"
+                      : "All Incident Reports"}
+                  </h1>
+                  <p className="text-gray-600 text-sm mt-1">
+                    {activeTab === "report"
+                      ? "Submit details about the incident"
+                      : activeTab === "myreports"
+                      ? "View and manage your reported incidents"
+                      : "View all incidents reported in the system"}
+                  </p>
                 </div>
                 <div className="flex items-center space-x-4">
                   <div className="relative">
                     <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input 
-                      type="text" 
-                      placeholder="Search..." 
+                    <input
+                      type="text"
+                      placeholder="Search..."
                       className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none"
                     />
                   </div>
                   <div className="relative">
                     <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
                       <i className="fas fa-bell text-xl"></i>
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">3</span>
+                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
+                        3
+                      </span>
                     </button>
                   </div>
                 </div>
@@ -369,10 +403,14 @@ function Incidents() {
           <main className="p-6">
             {activeTab === "report" && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6 hover:shadow-md transition-shadow">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">Incident Details</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  Incident Details
+                </h2>
                 <form onSubmit={handleSubmit} className="space-y-6">
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Title
+                    </label>
                     <input
                       type="text"
                       name="title"
@@ -385,7 +423,9 @@ function Incidents() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Description
+                    </label>
                     <textarea
                       name="description"
                       placeholder="Detailed description of the incident"
@@ -398,7 +438,9 @@ function Incidents() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Incident Type</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Incident Type
+                    </label>
                     <select
                       name="type"
                       className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
@@ -417,7 +459,9 @@ function Incidents() {
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Latitude
+                      </label>
                       <input
                         type="text"
                         name="latitude"
@@ -429,7 +473,9 @@ function Incidents() {
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Longitude
+                      </label>
                       <input
                         type="text"
                         name="longitude"
@@ -443,21 +489,25 @@ function Incidents() {
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Upload Image</label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Upload Image
+                    </label>
                     <div className="flex items-center justify-center w-full">
                       <label className="flex flex-col w-full h-32 border-2 border-dashed border-gray-300 hover:border-gray-400 rounded-lg cursor-pointer">
                         <div className="flex flex-col items-center justify-center pt-7">
                           <i className="fas fa-cloud-upload-alt text-gray-500 text-3xl"></i>
                           <p className="pt-1 text-sm text-gray-600">
-                            {formData.image ? formData.image.name : "Click to upload an image"}
+                            {formData.image
+                              ? formData.image.name
+                              : "Click to upload an image"}
                           </p>
                         </div>
-                        <input 
-                          type="file" 
-                          name="image" 
-                          accept="image/*" 
-                          onChange={handleChange} 
-                          className="opacity-0" 
+                        <input
+                          type="file"
+                          name="image"
+                          accept="image/*"
+                          onChange={handleChange}
+                          className="opacity-0"
                         />
                       </label>
                     </div>
@@ -481,8 +531,12 @@ function Incidents() {
                 <div className="px-6 py-4 border-b border-gray-200">
                   <div className="flex items-center justify-between">
                     <div>
-                      <h3 className="text-xl font-semibold text-gray-900">My Incident Reports</h3>
-                      <p className="text-gray-600 text-sm">View and manage your reported incidents</p>
+                      <h3 className="text-xl font-semibold text-gray-900">
+                        My Incident Reports
+                      </h3>
+                      <p className="text-gray-600 text-sm">
+                        View and manage your reported incidents
+                      </p>
                     </div>
                     <div className="flex space-x-3">
                       {/* <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
@@ -491,62 +545,54 @@ function Incidents() {
                     </div>
                   </div>
                 </div>
-                
-                <div className="overflow-x-auto">
+
+                <div className="p-6">
                   {incidents.length === 0 ? (
-                    <div className="p-6 text-center text-gray-600">
+                    <div className="text-center text-gray-600">
                       You have not submitted any incident reports yet.
                     </div>
                   ) : (
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {incidents.map((incident) => (
-                          <tr key={incident.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{incident.title}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{incident.type}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(incident.status)}`}>
-                                {incident.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-500">
-                                {new Date(incident.created_at).toLocaleString()}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <div className="flex space-x-2">
-                                <button 
-                                  onClick={() => viewMedia(incident.id)}
-                                  className="text-blue-600 hover:text-blue-800"
-                                >
-                                  <i className="fas fa-eye"></i>
-                                </button>
-                                <button 
-                                  onClick={() => openEditModal(incident)}
-                                  className="text-gray-600 hover:text-gray-800"
-                                >
-                                  <i className="fas fa-edit"></i>
-                                </button>
-                              </div>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+                      {incidents.map((incident) => (
+                        <div
+                          key={incident.id}
+                          className="bg-white rounded-xl shadow border p-4 flex flex-col justify-between h-full"
+                        >
+                          <div>
+                            <h4 className="text-lg font-semibold text-gray-800 mb-1">
+                              {incident.title}
+                            </h4>
+                            <p className="text-sm text-gray-600 mb-2 line-clamp-3">
+                              {incident.description}
+                            </p>
+                            <span
+                              className={`inline-block px-3 py-1 text-xs font-semibold rounded-full mb-2 ${getStatusColor(
+                                incident.status
+                              )}`}
+                            >
+                              {incident.status}
+                            </span>
+                            <p className="text-xs text-gray-500">
+                              {new Date(incident.created_at).toLocaleString()}
+                            </p>
+                          </div>
+                          <div className="flex justify-between items-center mt-4">
+                            <button
+                              onClick={() => viewMedia(incident.id)}
+                              className="text-blue-600 hover:text-blue-800 text-sm"
+                            >
+                              <i className="fas fa-eye mr-1"></i> View Media
+                            </button>
+                            <button
+                              onClick={() => openEditModal(incident)}
+                              className="text-gray-600 hover:text-gray-800 text-sm"
+                            >
+                              <i className="fas fa-edit mr-1"></i> Edit
+                            </button>
+                          </div>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
@@ -561,18 +607,8 @@ function Incidents() {
                       <p className="text-gray-600 text-sm">View all incidents reported in the system</p> */}
                     </div>
                     <div className="flex space-x-3">
-                      <select 
-                        name="status"
-                        value={filters.status}
-                        onChange={handleFilterChange}
-                        className="px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                      >
-                        <option value="">All Statuses</option>
-                        <option value="reported">Reported</option>
-                        <option value="in_progress">In Progress</option>
-                        <option value="resolved">Resolved</option>
-                      </select>
-                      <select 
+                      
+                      <select
                         name="type"
                         value={filters.type}
                         onChange={handleFilterChange}
@@ -582,73 +618,68 @@ function Incidents() {
                         <option value="Fire">Fire</option>
                         <option value="Accident">Accident</option>
                         <option value="Crime">Crime</option>
-                        <option value="Natural Disaster">Natural Disaster</option>
+                        <option value="Natural Disaster">
+                          Natural Disaster
+                        </option>
                         <option value="Other">Other</option>
                       </select>
                     </div>
                   </div>
                 </div>
-                
+
                 <div className="overflow-x-auto">
                   {loadingAllIncidents ? (
                     <div className="p-6 text-center text-gray-600">
-                      <i className="fas fa-spinner fa-spin mr-2"></i> Loading incidents...
+                      <i className="fas fa-spinner fa-spin mr-2"></i> Loading
+                      incidents...
                     </div>
                   ) : allIncidents.length === 0 ? (
                     <div className="p-6 text-center text-gray-600">
                       No incidents found matching your filters.
                     </div>
                   ) : (
-                    <table className="w-full">
-                      <thead className="bg-gray-50">
-                        <tr>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reporter</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                          <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
-                        </tr>
-                      </thead>
-                      <tbody className="bg-white divide-y divide-gray-200">
-                        {allIncidents.map((incident) => (
-                          <tr key={incident.id} className="hover:bg-gray-50">
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm font-medium text-gray-900">{incident.title}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{incident.type}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(incident.status)}`}>
-                                {incident.status}
-                              </span>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-900">{incident.reporter}</div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap">
-                              <div className="text-sm text-gray-500">
-                                {new Date(incident.created_at).toLocaleString()}
-                              </div>
-                            </td>
-                            <td className="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                              <button 
-                                onClick={() => viewMedia(incident.id)}
-                                className="text-blue-600 hover:text-blue-800"
-                              >
-                                <i className="fas fa-eye"></i>
-                              </button>
-                            </td>
-                          </tr>
-                        ))}
-                      </tbody>
-                    </table>
+                    <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
+  {allIncidents.map((incident) => (
+    <div
+      key={incident.id}
+      className="bg-white rounded-xl shadow border border-gray-200 p-4"
+    >
+      <h4 className="text-lg font-semibold text-gray-800 mb-1">
+        {incident.title}
+      </h4>
+      <p className="text-sm text-gray-500 mb-2">
+        <span className="font-medium">Type:</span> {incident.type}
+      </p>
+      <p className="text-sm text-gray-500 mb-2">
+        <span className="font-medium">Status:</span>{" "}
+        <span
+          className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+            incident.status
+          )}`}
+        >
+          {incident.status}
+        </span>
+      </p>
+      <p className="text-sm text-gray-500 mb-2">
+        <span className="font-medium">Reporter:</span> {incident.reporter}
+      </p>
+      <p className="text-sm text-gray-400 mb-3">
+        {new Date(incident.created_at).toLocaleString()}
+      </p>
+      <button
+        onClick={() => viewMedia(incident.id)}
+        className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
+      >
+        <i className="fas fa-eye mr-1"></i> View Media
+      </button>
+    </div>
+  ))}
+</div>
+
                   )}
                 </div>
               </div>
             )}
-
           </main>
         </div>
       </div>
@@ -658,11 +689,15 @@ function Incidents() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl">
             <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900">Edit Incident</h3>
+              <h3 className="text-xl font-semibold text-gray-900">
+                Edit Incident
+              </h3>
             </div>
             <form onSubmit={handleEditSubmit} className="p-6 space-y-6">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title
+                </label>
                 <input
                   type="text"
                   name="title"
@@ -674,7 +709,9 @@ function Incidents() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
                 <textarea
                   name="description"
                   placeholder="Description"
@@ -687,7 +724,9 @@ function Incidents() {
               </div>
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Latitude
+                  </label>
                   <input
                     type="text"
                     name="latitude"
@@ -699,7 +738,9 @@ function Incidents() {
                   />
                 </div>
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Longitude
+                  </label>
                   <input
                     type="text"
                     name="longitude"
@@ -734,10 +775,15 @@ function Incidents() {
       {/* Media Modal */}
       {showMediaModal && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl">
+          <div
+            ref={modalRef}
+            className="bg-white rounded-xl shadow-lg w-full max-w-4xl"
+          >
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray-900">Incident Media</h3>
-              <button 
+              <h3 className="text-xl font-semibold text-gray-900">
+                Incident Media
+              </h3>
+              <button
                 onClick={() => setShowMediaModal(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -747,9 +793,9 @@ function Incidents() {
             <div className="p-6 grid grid-cols-1 md:grid-cols-2 gap-4">
               {mediaUrls.map((url, index) => (
                 <div key={index} className="rounded-lg overflow-hidden">
-                  <img 
-                    src={url} 
-                    alt={`Incident media ${index + 1}`} 
+                  <img
+                    src={url}
+                    alt={`Incident media ${index + 1}`}
                     className="w-full h-auto object-cover"
                   />
                 </div>
