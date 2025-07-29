@@ -24,7 +24,7 @@ function Home() {
   }, []);
 
   return (
-    <div className="min-h-screen bg-white text-gray-800 flex flex-col">
+    <div className="min-h-screen bg-white-400 text-gray-800 flex flex-col">
       {/* Header */}
       <Header />
 
@@ -36,7 +36,7 @@ function Home() {
               <div className="w-full pb-6 space-y-6 sm:max-w-md lg:max-w-lg md:space-y-4 lg:space-y-8 xl:space-y-9 sm:pr-5 lg:pr-0 md:pb-0">
                 <h1 className="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl md:text-4xl lg:text-5xl xl:text-6xl">
                   <span className="block xl:inline">Ajali: Report</span>
-                  <span className="block text-indigo-600 xl:inline">Emergencies Instantly</span>
+                  <span className="block text-red-600 xl:inline">Emergencies Instantly</span>
                 </h1>
                 <p className="mx-auto text-base text-gray-500 sm:max-w-md lg:text-xl md:max-w-3xl">
                   A modern platform to report and track incidents in real-time. Ensure your safety and community awareness.
@@ -44,7 +44,7 @@ function Home() {
                 <div className="relative flex flex-col sm:flex-row sm:space-x-4">
                   <Link 
                     to="/register" 
-                    className="flex items-center w-full px-6 py-3 mb-3 text-lg text-white bg-indigo-600 rounded-md sm:mb-0 hover:bg-indigo-700 sm:w-auto"
+                    className="flex items-center w-full px-6 py-3 mb-3 text-lg text-white bg-zinc-600 rounded-md sm:mb-0 hover:bg-indigo-700 sm:w-auto"
                   >
                     Register Now
                     <ArrowRightIcon className="w-5 h-5 ml-1" />
@@ -87,7 +87,7 @@ function Home() {
           
           <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
             <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-100 text-indigo-600 mb-4">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-red-100 text-red-600 mb-4">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
                 </svg>
@@ -99,7 +99,7 @@ function Home() {
             </div>
             
             <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-100 text-indigo-600 mb-4">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-red-100 text-red-600 mb-4">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M15 17h5l-1.405-1.405A2.032 2.032 0 0118 14.158V11a6.002 6.002 0 00-4-5.659V5a2 2 0 10-4 0v.341C7.67 6.165 6 8.388 6 11v3.159c0 .538-.214 1.055-.595 1.436L4 17h5m6 0v1a3 3 0 11-6 0v-1m6 0H9" />
                 </svg>
@@ -111,7 +111,7 @@ function Home() {
             </div>
             
             <div className="bg-white p-8 rounded-lg shadow-md hover:shadow-lg transition-shadow">
-              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-indigo-100 text-indigo-600 mb-4">
+              <div className="flex items-center justify-center h-12 w-12 rounded-md bg-red-100 text-red-600 mb-4">
                 <svg className="h-6 w-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
                 </svg>
@@ -150,7 +150,7 @@ function Home() {
       </section>
 
       {/* CTA Section */}
-      <section className="py-20 bg-indigo-600 text-white">
+      <section className="py-20 bg-red-600 text-white">
         <div className="container max-w-6xl mx-auto px-8 text-center">
           <h2 className="text-3xl font-extrabold tracking-tight sm:text-4xl mb-4">
             Be the First to Report
@@ -160,7 +160,7 @@ function Home() {
           </p>
           <Link 
             to="/Incidents" 
-            className="inline-flex items-center px-6 py-3 text-lg font-medium text-indigo-600 bg-white rounded-md shadow-sm hover:bg-gray-50"
+            className="inline-flex items-center px-6 py-3 text-lg font-medium text-red-600 bg-white rounded-md shadow-sm hover:bg-gray-50"
           >
             Report Now
             <ArrowRightIcon className="w-5 h-5 ml-2" />

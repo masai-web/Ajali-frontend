@@ -516,7 +516,7 @@ function Incidents() {
                   <div className="flex justify-end">
                     <button
                       type="submit"
-                      className="px-6 py-3 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
+                      className="px-6 py-3 bg-red-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow-sm transition-colors"
                     >
                       <i className="fas fa-paper-plane mr-2"></i>
                       Submit Incident

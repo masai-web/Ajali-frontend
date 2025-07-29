@@ -108,29 +108,21 @@ function Login() {
 
             <div className="flex items-center justify-between mb-6">
               <div className="flex items-center">
-                <input
-                  id="remember-me"
-                  name="remember-me"
-                  type="checkbox"
-                  className="h-4 w-4 rounded border-gray-300 text-blue-600 focus:ring-blue-500"
-                />
-                <label htmlFor="remember-me" className="ml-2 block text-sm text-gray-600">
-                  Remember me
-                </label>
+               
               </div>
 
               <Link 
                 to="/forgot-password" 
                 className="text-sm text-blue-600 hover:text-blue-500 font-medium transition-colors"
               >
-                Forgot password?
+                
               </Link>
             </div>
 
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+              className="w-full py-3 px-4 bg-zinc-600 hover:bg-zinc-700 text-white font-medium rounded-lg shadow hover:shadow-lg transition-all duration-300 flex items-center justify-center"
             >
               {loading ? "Signing in..." : "Sign In"}
               <ArrowRightIcon className="w-5 h-5 ml-2" />
