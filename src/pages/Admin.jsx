@@ -252,22 +252,35 @@ function Admin() {
       console.error("Error fetching users:", err);
     }
   };
-  const deleteUser = async (userId) => {
-  if (!window.confirm("Are you sure you want to delete this user?")) return;
+ const deleteUser = async (userId) => {
+   const confirmResult = await Swal.fire({
+     title: "Are you sure?",
+     text: "You won't be able to revert this!",
+     icon: "warning",
+     showCancelButton: true,
+     confirmButtonColor: "#d33",
+     cancelButtonColor: "#3085d6",
+     confirmButtonText: "Yes, delete it!",
+   });
 
-  try {
-    await axios.delete(`${import.meta.env.VITE_API_URL}/auth/users/${userId}`, {
-      headers: { Authorization: `Bearer ${token}` },
-      withCredentials: true,
-    });
+   if (!confirmResult.isConfirmed) return;
 
-    // Refresh the user list
-    fetchUsers();
-  } catch (err) {
-    console.error("Failed to delete user:", err);
-    alert(err.response?.data?.message || "Error deleting user.");
-  }
-  };
+   try {
+     await axios.delete(
+       `${import.meta.env.VITE_API_URL}/auth/users/${userId}`,
+       {
+         headers: { Authorization: `Bearer ${token}` },
+         withCredentials: true,
+       }
+     );
+
+     // Refresh the user list
+     fetchUsers();
+   } catch (err) {
+     console.error("Failed to delete user:", err);
+     toast.error(err.response?.data?.message || "Error deleting user.");
+   }
+ };
 
   useEffect(() => {
     if (!token) {

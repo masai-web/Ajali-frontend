@@ -149,7 +149,7 @@ function Register() {
             <button
               type="submit"
               disabled={loading}
-              className="w-full py-3 px-4 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg shadow hover:shadow-lg transition-all duration-300 flex items-center justify-center"
+              className="w-full py-3 px-4 bg-zinc-600 hover:bg-zinc-700 text-white font-medium rounded-lg shadow hover:shadow-lg transition-all duration-300 flex items-center justify-center"
             >
               {loading ? "Registering..." : "Register"}
               <ArrowRightIcon className="w-5 h-5 ml-2" />
