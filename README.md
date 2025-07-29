@@ -35,8 +35,6 @@ Technologies Used
 
   2.Install dependencies
       npm install
-# or
-      yarn install
 
   3.Environment Setup
   pipenv install and pipenv shell
@@ -48,11 +46,11 @@ Technologies Used
 
      ajali-frontend/
 ├── src/
-│   ├── components/       # Reusable components
-│   ├── pages/            # Application pages
-│   ├── assets/           # Static assets
-│   ├── App.jsx           # Main application
-│   └── main.jsx          # Entry point
-├── public/               # Public assets
-├── vite.config.js        # Vite configuration
+│   ├── components/       
+│   ├── pages/           
+│   ├── assets/          
+│   ├── App.jsx          
+│   └── main.jsx          
+├── public/               
+├── vite.config.js        
 └── package.json
