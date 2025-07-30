@@ -6,7 +6,8 @@
   "scripts": {
     "dev": "NODE_OPTIONS=--openssl-legacy-provider vite",
     "build": "NODE_OPTIONS=--openssl-legacy-provider vite build",
-    "preview": "vite preview --port $PORT"
+    "preview": "vite preview --port 4173",
+    "start": "serve -s dist"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",
@@ -17,6 +18,7 @@
     "react-icons": "^5.5.0",
     "react-router-dom": "^7.7.1",
     "react-toastify": "^11.0.5",
+    "serve": "^14.2.4",
     "sweetalert2": "^11.22.2"
   },
   "devDependencies": {
