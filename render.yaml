@@ -1,11 +1,10 @@
 services:
   - type: web
     name: ajali-frontend
-    runtime: node
-    repo: https://github.com/masai-web/Ajali-frontend
-    branch: main
-    buildCommand: npm run build
-    startCommand: npm run preview
+    plan: free
+    runtime: node 
+    buildCommand: npm install && npm run build
+    startCommand: serve -s dist
     envVars:
-      - key: NODE_VERSION
-        value: 18
+      - key: VITE_API_URL
+        value: https://ajali-backend-7ex3.onrender.com
