@@ -2,9 +2,10 @@ services:
   - type: web
     name: ajali-frontend
     plan: free
-    runtime: node 
+    runtime: node
     buildCommand: npm install && npm run build
     startCommand: serve -s dist
     envVars:
       - key: VITE_API_URL
         value: https://ajali-backend-7ex3.onrender.com
+    healthCheckPath: /  # Recommended for web services
