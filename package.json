@@ -6,7 +6,7 @@
   "scripts": {
     "dev": "NODE_OPTIONS=--openssl-legacy-provider vite",
     "build": "NODE_OPTIONS=--openssl-legacy-provider vite build",
-    "preview": "vite preview"
+    "preview": "vite preview --port $PORT"
   },
   "dependencies": {
     "@heroicons/react": "^2.2.0",

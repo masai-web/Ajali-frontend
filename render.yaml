@@ -4,8 +4,7 @@ services:
     plan: free
     runtime: node
     buildCommand: npm install && npm run build
-    startCommand: serve -s dist
+    startCommand: npx serve -s dist  # Use npx to run serve without global install
     envVars:
       - key: VITE_API_URL
         value: https://ajali-backend-7ex3.onrender.com
-    healthCheckPath: /  # Recommended for web services
