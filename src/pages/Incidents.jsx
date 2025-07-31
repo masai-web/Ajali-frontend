@@ -3,6 +3,8 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { toast } from "react-toastify";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+
 
 function Incidents() {
   const [user, setUser] = useState(null);
@@ -39,6 +41,20 @@ function Incidents() {
 
   const token = localStorage.getItem("access_token");
   const API_URL = import.meta.env.VITE_API_URL;
+
+  const containerStyle = {
+    width: "100%",
+    height: "300px",
+  };
+
+  const center = {
+    lat: -1.2921, // default to Nairobi
+    lng: 36.8219,
+  };
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: "AIzaSyAQ9-VvF0awBz54WuSGFrFyVzvLUzVxO7I", 
+  });
   
  useEffect(() => {
    const handleOutsideClick = (e) => {
@@ -456,6 +472,42 @@ function Incidents() {
                       <option value="Other">Other</option>
                     </select>
                   </div>
+                  {isLoaded && (
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-2">
+                        Select Location on Map
+                      </label>
+                      <GoogleMap
+                        mapContainerStyle={containerStyle}
+                        center={center}
+                        zoom={6}
+                        onClick={(e) => {
+                          const lat = e.latLng.lat();
+                          const lng = e.latLng.lng();
+                          setFormData({
+                            ...formData,
+                            latitude: lat,
+                            longitude: lng,
+                          });
+                        }}
+                      >
+                        {formData.latitude && formData.longitude && (
+                          <Marker
+                            position={{
+                              lat: parseFloat(formData.latitude),
+                              lng: parseFloat(formData.longitude),
+                            }}
+                          />
+                        )}
+                      </GoogleMap>
+                    </div>
+                  )}
+                  {formData.latitude && formData.longitude && (
+                    <p className="text-sm text-gray-600 mt-2">
+                      Selected Location: {formData.latitude},{" "}
+                      {formData.longitude}
+                    </p>
+                  )}
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
@@ -512,6 +564,7 @@ function Incidents() {
                       </label>
                     </div>
                   </div>
+                  
 
                   <div className="flex justify-end">
                     <button
@@ -607,7 +660,6 @@ function Incidents() {
                       <p className="text-gray-600 text-sm">View all incidents reported in the system</p> */}
                     </div>
                     <div className="flex space-x-3">
-                      
                       <select
                         name="type"
                         value={filters.type}
@@ -639,43 +691,44 @@ function Incidents() {
                     </div>
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
-  {allIncidents.map((incident) => (
-    <div
-      key={incident.id}
-      className="bg-white rounded-xl shadow border border-gray-200 p-4"
-    >
-      <h4 className="text-lg font-semibold text-gray-800 mb-1">
-        {incident.title}
-      </h4>
-      <p className="text-sm text-gray-500 mb-2">
-        <span className="font-medium">Type:</span> {incident.type}
-      </p>
-      <p className="text-sm text-gray-500 mb-2">
-        <span className="font-medium">Status:</span>{" "}
-        <span
-          className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
-            incident.status
-          )}`}
-        >
-          {incident.status}
-        </span>
-      </p>
-      <p className="text-sm text-gray-500 mb-2">
-        <span className="font-medium">Reporter:</span> {incident.reporter}
-      </p>
-      <p className="text-sm text-gray-400 mb-3">
-        {new Date(incident.created_at).toLocaleString()}
-      </p>
-      <button
-        onClick={() => viewMedia(incident.id)}
-        className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
-      >
-        <i className="fas fa-eye mr-1"></i> View Media
-      </button>
-    </div>
-  ))}
-</div>
-
+                      {allIncidents.map((incident) => (
+                        <div
+                          key={incident.id}
+                          className="bg-white rounded-xl shadow border border-gray-200 p-4"
+                        >
+                          <h4 className="text-lg font-semibold text-gray-800 mb-1">
+                            {incident.title}
+                          </h4>
+                          <p className="text-sm text-gray-500 mb-2">
+                            <span className="font-medium">Type:</span>{" "}
+                            {incident.type}
+                          </p>
+                          <p className="text-sm text-gray-500 mb-2">
+                            <span className="font-medium">Status:</span>{" "}
+                            <span
+                              className={`inline-block px-2 py-1 rounded-full text-xs font-semibold ${getStatusColor(
+                                incident.status
+                              )}`}
+                            >
+                              {incident.status}
+                            </span>
+                          </p>
+                          <p className="text-sm text-gray-500 mb-2">
+                            <span className="font-medium">Reporter:</span>{" "}
+                            {incident.reporter}
+                          </p>
+                          <p className="text-sm text-gray-400 mb-3">
+                            {new Date(incident.created_at).toLocaleString()}
+                          </p>
+                          <button
+                            onClick={() => viewMedia(incident.id)}
+                            className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
+                          >
+                            <i className="fas fa-eye mr-1"></i> View Media
+                          </button>
+                        </div>
+                      ))}
+                    </div>
                   )}
                 </div>
               </div>
