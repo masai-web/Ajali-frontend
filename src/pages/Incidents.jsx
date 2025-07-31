@@ -738,92 +738,116 @@ function Incidents() {
       </div>
 
       {/* Edit Modal */}
-      {editingIncident && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl">
-            <div className="px-6 py-4 border-b border-gray-200">
-              <h3 className="text-xl font-semibold text-gray-900">
-                Edit Incident
-              </h3>
-            </div>
-            <form onSubmit={handleEditSubmit} className="p-6 space-y-6">
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  placeholder="Title"
-                  value={editForm.title}
-                  onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Description
-                </label>
-                <textarea
-                  name="description"
-                  placeholder="Description"
-                  rows={4}
-                  value={editForm.description}
-                  onChange={handleEditChange}
-                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                  required
-                />
-              </div>
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Latitude
-                  </label>
-                  <input
-                    type="text"
-                    name="latitude"
-                    placeholder="Latitude"
-                    value={editForm.latitude}
-                    onChange={handleEditChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                    required
-                  />
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">
-                    Longitude
-                  </label>
-                  <input
-                    type="text"
-                    name="longitude"
-                    placeholder="Longitude"
-                    value={editForm.longitude}
-                    onChange={handleEditChange}
-                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-                    required
-                  />
-                </div>
-              </div>
-              <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
-                <button
-                  type="button"
-                  onClick={() => setEditingIncident(null)}
-                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-                >
-                  Cancel
-                </button>
-                <button
-                  type="submit"
-                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-                >
-                  Save Changes
-                </button>
-              </div>
-            </form>
+{editingIncident && isLoaded && (
+  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+    <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl">
+      <div className="px-6 py-4 border-b border-gray-200">
+        <h3 className="text-xl font-semibold text-gray-900">Edit Incident</h3>
+      </div>
+      <form onSubmit={handleEditSubmit} className="p-6 space-y-6">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
+          <input
+            type="text"
+            name="title"
+            placeholder="Title"
+            value={editForm.title}
+            onChange={handleEditChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            required
+          />
+        </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+          <textarea
+            name="description"
+            placeholder="Description"
+            rows={4}
+            value={editForm.description}
+            onChange={handleEditChange}
+            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+            required
+          />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
+            <input
+              type="text"
+              name="latitude"
+              placeholder="Latitude"
+              value={editForm.latitude}
+              onChange={handleEditChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+              required
+            />
+          </div>
+          <div>
+            <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
+            <input
+              type="text"
+              name="longitude"
+              placeholder="Longitude"
+              value={editForm.longitude}
+              onChange={handleEditChange}
+              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+              required
+            />
           </div>
         </div>
-      )}
+
+        {/* Google Map */}
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">Location on Map</label>
+          <GoogleMap
+            mapContainerStyle={containerStyle}
+            center={{
+              lat: parseFloat(editForm.latitude) || defaultCenter.lat,
+              lng: parseFloat(editForm.longitude) || defaultCenter.lng,
+            }}
+            zoom={14}
+            onClick={(e) =>
+              handleEditChange({
+                target: {
+                  name: "latitude",
+                  value: e.latLng.lat(),
+                },
+              }) || handleEditChange({
+                target: {
+                  name: "longitude",
+                  value: e.latLng.lng(),
+                },
+              })
+            }
+          >
+            <Marker
+              position={{
+                lat: parseFloat(editForm.latitude) || defaultCenter.lat,
+                lng: parseFloat(editForm.longitude) || defaultCenter.lng,
+              }}
+            />
+          </GoogleMap>
+        </div>
+
+        <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
+          <button
+            type="button"
+            onClick={() => setEditingIncident(null)}
+            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+          >
+            Cancel
+          </button>
+          <button
+            type="submit"
+            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+          >
+            Save Changes
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+)}
 
       {/* Media Modal */}
       {showMediaModal && (
