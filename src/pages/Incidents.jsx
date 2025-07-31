@@ -7,55 +7,56 @@ import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
 
 
 function Incidents() {
-  const [user, setUser] = useState(null);
-  const [incidents, setIncidents] = useState([]);
-  const [activeTab, setActiveTab] = useState("report");
-  const [editingIncident, setEditingIncident] = useState(null);
-  const navigate = useNavigate();
-  const modalRef = useRef();
+ const [user, setUser] = useState(null);
+ const [incidents, setIncidents] = useState([]);
+ const [activeTab, setActiveTab] = useState("report");
+ const [mediaList, setMediaList] = useState([]);
+ const [editingIncident, setEditingIncident] = useState(null);
+ const navigate = useNavigate();
+ const modalRef = useRef();
 
-  const [allIncidents, setAllIncidents] = useState([]);
-  const [loadingAllIncidents, setLoadingAllIncidents] = useState(false);
-  const [filters, setFilters] = useState({
-  status: '',
-  type: ''
-  });
+ const [allIncidents, setAllIncidents] = useState([]);
+ const [loadingAllIncidents, setLoadingAllIncidents] = useState(false);
+ const [filters, setFilters] = useState({
+   status: "",
+   type: "",
+ });
 
-  const [formData, setFormData] = useState({
-    title: "",
-    description: "",
-    type: "",
-    latitude: "",
-    longitude: "",
-    image: null,
-  });
+ const [formData, setFormData] = useState({
+   title: "",
+   description: "",
+   type: "",
+   latitude: "",
+   longitude: "",
+   image: null,
+ });
 
-  const [editForm, setEditForm] = useState({
-    title: "",
-    description: "",
-    latitude: "",
-    longitude: "",
-  });
-  const [mediaUrls, setMediaUrls] = useState([]);
-  const [showMediaModal, setShowMediaModal] = useState(false);
+ const [editForm, setEditForm] = useState({
+   title: "",
+   description: "",
+   latitude: "",
+   longitude: "",
+ });
+ const [mediaUrls, setMediaUrls] = useState([]);
+ const [showMediaModal, setShowMediaModal] = useState(false);
 
-  const token = localStorage.getItem("access_token");
-  const API_URL = import.meta.env.VITE_API_URL;
+ const token = localStorage.getItem("access_token");
+ const API_URL = import.meta.env.VITE_API_URL;
 
-  const containerStyle = {
-    width: "100%",
-    height: "300px",
-  };
+ const containerStyle = {
+   width: "100%",
+   height: "300px",
+ };
 
-  const center = {
-    lat: -1.2921, // default to Nairobi
-    lng: 36.8219,
-  };
+ const center = {
+   lat: -1.2921, // default to Nairobi
+   lng: 36.8219,
+ };
 
-  const { isLoaded } = useJsApiLoader({
-    googleMapsApiKey: "AIzaSyAQ9-VvF0awBz54WuSGFrFyVzvLUzVxO7I", 
-  });
-  
+ const { isLoaded } = useJsApiLoader({
+   googleMapsApiKey: "AIzaSyAQ9-VvF0awBz54WuSGFrFyVzvLUzVxO7I",
+ });
+
  useEffect(() => {
    const handleOutsideClick = (e) => {
      if (
@@ -73,205 +74,203 @@ function Incidents() {
    };
  }, [showMediaModal]);
 
-  useEffect(() => {
-    if (!token) {
-      navigate("/");
-      return;
-    }
+ useEffect(() => {
+   if (!token) {
+     navigate("/");
+     return;
+   }
 
-    axios
-      .get(`${API_URL}/auth/me`, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      })
-      .then((res) => {
-        const userData = res.data.user;
-        setUser(userData);
+   axios
+     .get(`${API_URL}/auth/me`, {
+       headers: { Authorization: `Bearer ${token}` },
+       withCredentials: true,
+     })
+     .then((res) => {
+       const userData = res.data.user;
+       setUser(userData);
 
-        axios
-          .get(`${API_URL}/incidents?reporter=${userData.username}`, {
-            headers: { Authorization: `Bearer ${token}` },
-            withCredentials: true,
-          })
-          .then((res2) => {
-            setIncidents(res2.data.incidents);
-          })
-          .catch(() => setIncidents([]));
-      })
-      .catch((err) => {
-        console.error("Error fetching user:", err);
-        navigate("/");
-      });
-  }, [token, navigate]);
+       axios
+         .get(`${API_URL}/incidents?reporter=${userData.username}`, {
+           headers: { Authorization: `Bearer ${token}` },
+           withCredentials: true,
+         })
+         .then((res2) => {
+           setIncidents(res2.data.incidents);
+         })
+         .catch(() => setIncidents([]));
+     })
+     .catch((err) => {
+       console.error("Error fetching user:", err);
+       navigate("/");
+     });
+ }, [token, navigate]);
 
-  const handleLogout = () => {
-    localStorage.removeItem("access_token");
-    navigate("/");
-  };
+ const handleLogout = () => {
+   localStorage.removeItem("access_token");
+   navigate("/");
+ };
 
-  function handleChange(e) {
-    const { name, value, files } = e.target;
-    setFormData((prev) => ({
-      ...prev,
-      [name]: name === "image" ? files[0] : value,
-    }));
-  }
+ function handleChange(e) {
+   const { name, value, files } = e.target;
+   setFormData((prev) => ({
+     ...prev,
+     [name]: name === "image" ? files[0] : value,
+   }));
+ }
 
-  function handleSubmit(e) {
-    e.preventDefault();
-    const form = new FormData();
-    for (const key in formData) {
-      if (formData[key]) {
-        if (key === "image") {
-          form.append("files", formData[key]);
-        } else {
-          form.append(key, formData[key]);
-        }
-      }
-    }
-    axios
-      .post(`${API_URL}/incidents`, form, {
-        headers: {
-          "Content-Type": "multipart/form-data",
-          Authorization: `Bearer ${token}`,
-        },
-        withCredentials: true,
-      })
-      .then(() => {
-        toast.success("Incident reported successfully!");
-        setFormData({
-          title: "",
-          description: "",
-          type: "",
-          latitude: "",
-          longitude: "",
-          image: null,
-        });
-        return axios.get(`${API_URL}/incidents?reporter=${user.username}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        });
-      })
-      .then((res2) => {
-        setIncidents(res2.data.incidents);
-        setActiveTab("myreports");
-      })
-      .catch((err) => {
-        console.error(err);
-        toast.error("Failed to submit incident");
-      });
-  }
+ function handleSubmit(e) {
+   e.preventDefault();
+   const form = new FormData();
+   for (const key in formData) {
+     if (formData[key]) {
+       if (key === "image") {
+         form.append("files", formData[key]);
+       } else {
+         form.append(key, formData[key]);
+       }
+     }
+   }
+   axios
+     .post(`${API_URL}/incidents`, form, {
+       headers: {
+         "Content-Type": "multipart/form-data",
+         Authorization: `Bearer ${token}`,
+       },
+       withCredentials: true,
+     })
+     .then(() => {
+       toast.success("Incident reported successfully!");
+       setFormData({
+         title: "",
+         description: "",
+         type: "",
+         latitude: "",
+         longitude: "",
+         image: null,
+       });
+       return axios.get(`${API_URL}/incidents?reporter=${user.username}`, {
+         headers: { Authorization: `Bearer ${token}` },
+         withCredentials: true,
+       });
+     })
+     .then((res2) => {
+       setIncidents(res2.data.incidents);
+       setActiveTab("myreports");
+     })
+     .catch((err) => {
+       console.error(err);
+       toast.error("Failed to submit incident");
+     });
+ }
 
-  function openEditModal(incident) {
-    setEditingIncident(incident);
-    setEditForm({
-      title: incident.title,
-      description: incident.description,
-      latitude: incident.latitude,
-      longitude: incident.longitude,
-    });
-  }
+ function openEditModal(incident) {
+   setEditingIncident(incident);
+   setEditForm({
+     title: incident.title,
+     description: incident.description,
+     latitude: incident.latitude,
+     longitude: incident.longitude,
+   });
+ }
 
-  function handleEditChange(e) {
-    const { name, value } = e.target;
-    setEditForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  }
+ function handleEditChange(e) {
+   const { name, value } = e.target;
+   setEditForm((prev) => ({
+     ...prev,
+     [name]: value,
+   }));
+ }
 
-  function handleEditSubmit(e) {
-    e.preventDefault();
-    axios
-      .put(`${API_URL}/incidents/${editingIncident.id}`, editForm, {
-        headers: { Authorization: `Bearer ${token}` },
-        withCredentials: true,
-      })
-      .then(() => {
-        setEditingIncident(null);
-        return axios.get(`${API_URL}/incidents?reporter=${user.username}`, {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        });
-      })
-      .then((res2) => setIncidents(res2.data.incidents))
-      .catch((err) => {
-        console.error(err);
-        toast.error("Failed to update incident");
-      });
-  }
+ function handleEditSubmit(e) {
+   e.preventDefault();
+   axios
+     .put(`${API_URL}/incidents/${editingIncident.id}`, editForm, {
+       headers: { Authorization: `Bearer ${token}` },
+       withCredentials: true,
+     })
+     .then(() => {
+       setEditingIncident(null);
+       return axios.get(`${API_URL}/incidents?reporter=${user.username}`, {
+         headers: { Authorization: `Bearer ${token}` },
+         withCredentials: true,
+       });
+     })
+     .then((res2) => setIncidents(res2.data.incidents))
+     .catch((err) => {
+       console.error(err);
+       toast.error("Failed to update incident");
+     });
+ }
 
-  const viewMedia = async (incidentId) => {
-    try {
-      const res = await axios.get(
-        `${API_URL}/incidents/${incidentId}/media`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-        }
-      );
-      setMediaUrls(res.data.map((m) => m.file_url));
-      setShowMediaModal(true);
-    } catch (err) {
-      console.error("Failed to fetch media", err);
-      toast.error("Unable to load media");
-    }
-  };
+ const viewMedia = async (incidentId) => {
+   try {
+     const res = await axios.get(`${API_URL}/incidents/${incidentId}/media`, {
+       headers: {
+         Authorization: `Bearer ${token}`,
+       },
+       withCredentials: true,
+     });
+     setMediaList(res.data); // <-- Save media list so you can render per incident
+     setMediaUrls(res.data.map((m) => m.file_url));
+     setShowMediaModal(true);
+   } catch (err) {
+     console.error("Failed to fetch media", err);
+     toast.error("Unable to load media");
+   }
+ };
 
-  const getStatusColor = (status) => {
-    switch (status.toLowerCase()) {
-      case 'open':
-        return 'bg-blue-100 text-blue-800';
-      case 'pending':
-        return 'bg-yellow-100 text-yellow-800';
-      case 'resolved':
-        return 'bg-green-100 text-green-800';
-      case 'closed':
-        return 'bg-gray-100 text-gray-800';
-      default:
-        return 'bg-gray-100 text-gray-800';
-    }
-  };
+ const getStatusColor = (status) => {
+   switch (status.toLowerCase()) {
+     case "open":
+       return "bg-blue-100 text-blue-800";
+     case "pending":
+       return "bg-yellow-100 text-yellow-800";
+     case "resolved":
+       return "bg-green-100 text-green-800";
+     case "closed":
+       return "bg-gray-100 text-gray-800";
+     default:
+       return "bg-gray-100 text-gray-800";
+   }
+ };
 
+ const fetchAllIncidents = async () => {
+   setLoadingAllIncidents(true);
+   try {
+     const params = new URLSearchParams();
+     if (filters.status) params.append("status", filters.status);
+     if (filters.type) params.append("type", filters.type);
 
-  const fetchAllIncidents = async () => {
-    setLoadingAllIncidents(true);
-    try {
-      const params = new URLSearchParams();
-      if (filters.status) params.append('status', filters.status);
-      if (filters.type) params.append('type', filters.type);
-      
-      const res = await axios.get(
-        `${API_URL}/incidents/all?${params.toString()}`,
-        {
-          headers: { Authorization: `Bearer ${token}` },
-          withCredentials: true,
-        }
-      );
-      setAllIncidents(res.data.incidents);
-    } catch (err) {
-      toast.error("Failed to fetch all incidents");
-      console.error(err);
-    } finally {
-      setLoadingAllIncidents(false);
-    }
-  };
+     const res = await axios.get(
+       `${API_URL}/incidents/all?${params.toString()}`,
+       {
+         headers: { Authorization: `Bearer ${token}` },
+         withCredentials: true,
+       }
+     );
+     setAllIncidents(res.data.incidents);
+   } catch (err) {
+     toast.error("Failed to fetch all incidents");
+     console.error(err);
+   } finally {
+     setLoadingAllIncidents(false);
+   }
+ };
 
-  useEffect(() => {
-    if (activeTab === "allreports") {
-      fetchAllIncidents();
-    }
-  }, [activeTab, filters.status, filters.type]);
+ useEffect(() => {
+   if (activeTab === "allreports") {
+     fetchAllIncidents();
+   }
+ }, [activeTab, filters.status, filters.type]);
 
-  const handleFilterChange = (e) => {
-    setFilters({
-      ...filters,
-      [e.target.name]: e.target.value
-    });
-  };
+ const handleFilterChange = (e) => {
+   setFilters({
+     ...filters,
+     [e.target.name]: e.target.value,
+   });
+ };
 
+   
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -394,21 +393,9 @@ function Incidents() {
                   </p>
                 </div>
                 <div className="flex items-center space-x-4">
+                 
                   <div className="relative">
-                    <i className="fas fa-search absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400"></i>
-                    <input
-                      type="text"
-                      placeholder="Search..."
-                      className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none"
-                    />
-                  </div>
-                  <div className="relative">
-                    <button className="p-2 text-gray-600 hover:text-gray-900 hover:bg-gray-100 rounded-lg transition-colors">
-                      <i className="fas fa-bell text-xl"></i>
-                      <span className="absolute -top-1 -right-1 w-5 h-5 bg-red-500 text-white text-xs rounded-full flex items-center justify-center">
-                        3
-                      </span>
-                    </button>
+                    
                   </div>
                 </div>
               </div>
@@ -564,7 +551,6 @@ function Incidents() {
                       </label>
                     </div>
                   </div>
-                  
 
                   <div className="flex justify-end">
                     <button
@@ -590,11 +576,6 @@ function Incidents() {
                       <p className="text-gray-600 text-sm">
                         View and manage your reported incidents
                       </p>
-                    </div>
-                    <div className="flex space-x-3">
-                      {/* <button className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors">
-                        <i className="fas fa-download mr-2"></i>Export
-                      </button> */}
                     </div>
                   </div>
                 </div>
@@ -625,10 +606,41 @@ function Incidents() {
                             >
                               {incident.status}
                             </span>
-                            <p className="text-xs text-gray-500">
+                            <p className="text-xs text-gray-500 mb-4">
                               {new Date(incident.created_at).toLocaleString()}
                             </p>
+
+                            {/* Map display like in admin table */}
+                            {isLoaded &&
+                            incident.latitude &&
+                            incident.longitude ? (
+                              <div className="w-full h-48 rounded overflow-hidden shadow-sm border mb-4">
+                                <GoogleMap
+                                  mapContainerStyle={{
+                                    width: "100%",
+                                    height: "100%",
+                                  }}
+                                  center={{
+                                    lat: parseFloat(incident.latitude),
+                                    lng: parseFloat(incident.longitude),
+                                  }}
+                                  zoom={14}
+                                >
+                                  <Marker
+                                    position={{
+                                      lat: parseFloat(incident.latitude),
+                                      lng: parseFloat(incident.longitude),
+                                    }}
+                                  />
+                                </GoogleMap>
+                              </div>
+                            ) : (
+                              <span className="text-sm text-gray-400 mb-4">
+                                Loading map...
+                              </span>
+                            )}
                           </div>
+
                           <div className="flex justify-between items-center mt-4">
                             <button
                               onClick={() => viewMedia(incident.id)}
@@ -657,7 +669,7 @@ function Incidents() {
                   <div className="flex items-center justify-between">
                     <div>
                       {/* <h3 className="text-xl font-semibold text-gray-900">All Incident Reports</h3>
-                      <p className="text-gray-600 text-sm">View all incidents reported in the system</p> */}
+          <p className="text-gray-600 text-sm">View all incidents reported in the system</p> */}
                     </div>
                     <div className="flex space-x-3">
                       <select
@@ -694,7 +706,7 @@ function Incidents() {
                       {allIncidents.map((incident) => (
                         <div
                           key={incident.id}
-                          className="bg-white rounded-xl shadow border border-gray-200 p-4"
+                          className="bg-white rounded-xl shadow border border-gray-200 p-4 flex flex-col"
                         >
                           <h4 className="text-lg font-semibold text-gray-800 mb-1">
                             {incident.title}
@@ -720,6 +732,37 @@ function Incidents() {
                           <p className="text-sm text-gray-400 mb-3">
                             {new Date(incident.created_at).toLocaleString()}
                           </p>
+
+                          {/* Map display */}
+                          {isLoaded &&
+                          incident.latitude &&
+                          incident.longitude ? (
+                            <div className="w-full h-48 rounded overflow-hidden shadow-sm border mb-4">
+                              <GoogleMap
+                                mapContainerStyle={{
+                                  width: "100%",
+                                  height: "100%",
+                                }}
+                                center={{
+                                  lat: parseFloat(incident.latitude),
+                                  lng: parseFloat(incident.longitude),
+                                }}
+                                zoom={14}
+                              >
+                                <Marker
+                                  position={{
+                                    lat: parseFloat(incident.latitude),
+                                    lng: parseFloat(incident.longitude),
+                                  }}
+                                />
+                              </GoogleMap>
+                            </div>
+                          ) : (
+                            <span className="text-sm text-gray-400 mb-4">
+                              Loading map...
+                            </span>
+                          )}
+
                           <button
                             onClick={() => viewMedia(incident.id)}
                             className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
@@ -738,116 +781,129 @@ function Incidents() {
       </div>
 
       {/* Edit Modal */}
-{editingIncident && isLoaded && (
-  <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-    <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl">
-      <div className="px-6 py-4 border-b border-gray-200">
-        <h3 className="text-xl font-semibold text-gray-900">Edit Incident</h3>
-      </div>
-      <form onSubmit={handleEditSubmit} className="p-6 space-y-6">
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Title</label>
-          <input
-            type="text"
-            name="title"
-            placeholder="Title"
-            value={editForm.title}
-            onChange={handleEditChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            required
-          />
-        </div>
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
-          <textarea
-            name="description"
-            placeholder="Description"
-            rows={4}
-            value={editForm.description}
-            onChange={handleEditChange}
-            className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-            required
-          />
-        </div>
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Latitude</label>
-            <input
-              type="text"
-              name="latitude"
-              placeholder="Latitude"
-              value={editForm.latitude}
-              onChange={handleEditChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-              required
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Longitude</label>
-            <input
-              type="text"
-              name="longitude"
-              placeholder="Longitude"
-              value={editForm.longitude}
-              onChange={handleEditChange}
-              className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
-              required
-            />
-          </div>
-        </div>
+      {editingIncident && isLoaded && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-xl shadow-lg w-full max-w-2xl">
+            <div className="px-6 py-4 border-b border-gray-200">
+              <h3 className="text-xl font-semibold text-gray-900">
+                Edit Incident
+              </h3>
+            </div>
+            <form onSubmit={handleEditSubmit} className="p-6 space-y-6">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Title
+                </label>
+                <input
+                  type="text"
+                  name="title"
+                  placeholder="Title"
+                  value={editForm.title}
+                  onChange={handleEditChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Description
+                </label>
+                <textarea
+                  name="description"
+                  placeholder="Description"
+                  rows={4}
+                  value={editForm.description}
+                  onChange={handleEditChange}
+                  className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                  required
+                />
+              </div>
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Latitude
+                  </label>
+                  <input
+                    type="text"
+                    name="latitude"
+                    placeholder="Latitude"
+                    value={editForm.latitude}
+                    onChange={handleEditChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    required
+                  />
+                </div>
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Longitude
+                  </label>
+                  <input
+                    type="text"
+                    name="longitude"
+                    placeholder="Longitude"
+                    value={editForm.longitude}
+                    onChange={handleEditChange}
+                    className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent"
+                    required
+                  />
+                </div>
+              </div>
 
-        {/* Google Map */}
-        <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">Location on Map</label>
-          <GoogleMap
-            mapContainerStyle={containerStyle}
-            center={{
-              lat: parseFloat(editForm.latitude) || defaultCenter.lat,
-              lng: parseFloat(editForm.longitude) || defaultCenter.lng,
-            }}
-            zoom={14}
-            onClick={(e) =>
-              handleEditChange({
-                target: {
-                  name: "latitude",
-                  value: e.latLng.lat(),
-                },
-              }) || handleEditChange({
-                target: {
-                  name: "longitude",
-                  value: e.latLng.lng(),
-                },
-              })
-            }
-          >
-            <Marker
-              position={{
-                lat: parseFloat(editForm.latitude) || defaultCenter.lat,
-                lng: parseFloat(editForm.longitude) || defaultCenter.lng,
-              }}
-            />
-          </GoogleMap>
-        </div>
+              {/* Google Map */}
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Location on Map
+                </label>
+                <GoogleMap
+                  mapContainerStyle={containerStyle}
+                  center={{
+                    lat: parseFloat(editForm.latitude) || defaultCenter.lat,
+                    lng: parseFloat(editForm.longitude) || defaultCenter.lng,
+                  }}
+                  zoom={14}
+                  onClick={(e) =>
+                    handleEditChange({
+                      target: {
+                        name: "latitude",
+                        value: e.latLng.lat(),
+                      },
+                    }) ||
+                    handleEditChange({
+                      target: {
+                        name: "longitude",
+                        value: e.latLng.lng(),
+                      },
+                    })
+                  }
+                >
+                  <Marker
+                    position={{
+                      lat: parseFloat(editForm.latitude) || defaultCenter.lat,
+                      lng: parseFloat(editForm.longitude) || defaultCenter.lng,
+                    }}
+                  />
+                </GoogleMap>
+              </div>
 
-        <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
-          <button
-            type="button"
-            onClick={() => setEditingIncident(null)}
-            className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
-          >
-            Cancel
-          </button>
-          <button
-            type="submit"
-            className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
-          >
-            Save Changes
-          </button>
+              <div className="flex justify-end gap-4 pt-4 border-t border-gray-200">
+                <button
+                  type="button"
+                  onClick={() => setEditingIncident(null)}
+                  className="px-4 py-2 text-gray-600 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  Save Changes
+                </button>
+              </div>
+            </form>
+          </div>
         </div>
-      </form>
-    </div>
-  </div>
-)}
+      )}
 
       {/* Media Modal */}
       {showMediaModal && (
