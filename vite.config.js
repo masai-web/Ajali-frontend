@@ -3,7 +3,7 @@ import react from '@vitejs/plugin-react'
 
 export default defineConfig({
   server: {
-    port: 5173, // 👈 add this line
+    port: 5173, 
     https: {
       key: './ajalifrontend-privateKey.key',
       cert: './ajalifrontend.crt',
