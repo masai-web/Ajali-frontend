@@ -20,11 +20,14 @@ import { useNavigate, Link } from "react-router-dom";
 import { getLocationName } from "../utils/geocode";
 import { toast } from "react-toastify";
 import Swal from "sweetalert2";
+import { GoogleMap, Marker, useJsApiLoader } from "@react-google-maps/api";
+
 
 
 
 function Header() {
   const [language, setLanguage] = useState("en");
+  
 
   return (
     <nav className="fixed top-0 left-0 w-full z-50 bg-white shadow-md px-4 py-3">
@@ -400,10 +403,19 @@ function Admin() {
     }
   };
 
+  const containerStyle = {
+    width: "100%",
+    height: "120px",
+  };
+
+  const { isLoaded } = useJsApiLoader({
+    googleMapsApiKey: "AIzaSyAQ9-VvF0awBz54WuSGFrFyVzvLUzVxO7I", 
+  });
+
   return (
     <div className="min-h-screen bg-gray-50">
       <Header />
-      
+
       <div className="flex pt-16">
         <Sidebar
           selectedTab={selectedTab}
@@ -425,13 +437,16 @@ function Admin() {
                     {selectedTab.split("-")[0]}
                     {selectedTab.split("-")[1] && (
                       <span className="ml-2 text-blue-600">
-                        ({selectedTab.split("-")[1].charAt(0).toUpperCase() + selectedTab.split("-")[1].slice(1)})
+                        (
+                        {selectedTab.split("-")[1].charAt(0).toUpperCase() +
+                          selectedTab.split("-")[1].slice(1)}
+                        )
                       </span>
                     )}
                   </h1>
                   <p className="text-gray-600 text-sm mt-1">
-                    {selectedTab === "Dashboard" 
-                      ? "Overview of all reported incidents" 
+                    {selectedTab === "Dashboard"
+                      ? "Overview of all reported incidents"
                       : selectedTab === "Users"
                       ? "Manage system users"
                       : selectedTab.startsWith("Reports")
@@ -442,9 +457,9 @@ function Admin() {
                 <div className="flex items-center space-x-4">
                   <div className="relative">
                     <FaSearch className="absolute left-3 top-1/2 transform -translate-y-1/2 text-gray-400" />
-                    <input 
-                      type="text" 
-                      placeholder="Search..." 
+                    <input
+                      type="text"
+                      placeholder="Search..."
                       className="pl-10 pr-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-600 focus:border-transparent outline-none"
                       value={search}
                       onChange={(e) => setSearch(e.target.value)}
@@ -457,7 +472,8 @@ function Admin() {
 
           {/* Main Content Area */}
           <main className="p-6">
-            {(selectedTab === "Dashboard" || selectedTab.startsWith("Reports")) && (
+            {(selectedTab === "Dashboard" ||
+              selectedTab.startsWith("Reports")) && (
               <>
                 {loading ? (
                   <div className="flex justify-center items-center h-64">
@@ -469,44 +485,109 @@ function Admin() {
                       <table className="w-full">
                         <thead className="bg-gray-50">
                           <tr>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Title</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Status</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Type</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Reporter</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Location</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Date</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Media</th>
-                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Title
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Status
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Type
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Reporter
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Location
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Date
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Media
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Actions
+                            </th>
+                            <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                              Description
+                            </th>
                           </tr>
                         </thead>
                         <tbody className="bg-white divide-y divide-gray-200">
                           {incidents
                             .filter((i) =>
-                              i.title.toLowerCase().includes(search.toLowerCase())
+                              i.title
+                                .toLowerCase()
+                                .includes(search.toLowerCase())
                             )
                             .map((incident) => (
-                              <tr key={incident.id} className="hover:bg-gray-50">
+                              <tr
+                                key={incident.id}
+                                className="hover:bg-gray-50"
+                              >
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="text-sm font-medium text-gray-900">{incident.title}</div>
+                                  <div className="text-sm font-medium text-gray-900">
+                                    {incident.title}
+                                  </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                  <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(incident.status)}`}>
+                                  <span
+                                    className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${getStatusColor(
+                                      incident.status
+                                    )}`}
+                                  >
                                     {getStatusIcon(incident.status)}
-                                    {incident.status.charAt(0).toUpperCase() + incident.status.slice(1)}
+                                    {incident.status.charAt(0).toUpperCase() +
+                                      incident.status.slice(1)}
                                   </span>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="text-sm text-gray-900">{incident.type}</div>
+                                  <div className="text-sm text-gray-900">
+                                    {incident.type}
+                                  </div>
                                 </td>
+
                                 <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="text-sm text-gray-900">{incident.reporter}</div>
+                                  <div className="text-sm text-gray-900">
+                                    {incident.reporter}
+                                  </div>
                                 </td>
-                                <td className="px-6 py-4 whitespace-nowrap">
-                                  <div className="text-sm text-gray-500">{incident.locationName}</div>
+                                <td className="px-6 py-4 whitespace-nowrap min-w-[220px]">
+                                  {isLoaded &&
+                                  incident.latitude &&
+                                  incident.longitude ? (
+                                    <div className="w-[220px] h-[150px] rounded overflow-hidden shadow-sm border">
+                                      <GoogleMap
+                                        mapContainerStyle={{
+                                          width: "100%",
+                                          height: "100%",
+                                        }}
+                                        center={{
+                                          lat: parseFloat(incident.latitude),
+                                          lng: parseFloat(incident.longitude),
+                                        }}
+                                        zoom={14}
+                                      >
+                                        <Marker
+                                          position={{
+                                            lat: parseFloat(incident.latitude),
+                                            lng: parseFloat(incident.longitude),
+                                          }}
+                                        />
+                                      </GoogleMap>
+                                    </div>
+                                  ) : (
+                                    <span className="text-sm text-gray-400">
+                                      Loading map...
+                                    </span>
+                                  )}
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
                                   <div className="text-sm text-gray-500">
-                                    {new Date(incident.created_at).toLocaleString()}
+                                    {new Date(
+                                      incident.created_at
+                                    ).toLocaleString()}
                                   </div>
                                 </td>
                                 <td className="px-6 py-4 whitespace-nowrap">
@@ -523,19 +604,35 @@ function Admin() {
                                     <select
                                       className="border p-1 rounded-md bg-gray-50 text-sm"
                                       value={incident.status}
-                                      onChange={(e) => updateStatus(incident.id, e.target.value)}
+                                      onChange={(e) =>
+                                        updateStatus(
+                                          incident.id,
+                                          e.target.value
+                                        )
+                                      }
                                     >
                                       <option value="pending">Pending</option>
-                                      <option value="reviewing">Reviewing</option>
+                                      <option value="reviewing">
+                                        Reviewing
+                                      </option>
                                       <option value="resolved">Resolved</option>
-                                      <option value="dismissed">Dismissed</option>
+                                      <option value="dismissed">
+                                        Dismissed
+                                      </option>
                                     </select>
                                     <button
-                                      onClick={() => deleteIncident(incident.id)}
+                                      onClick={() =>
+                                        deleteIncident(incident.id)
+                                      }
                                       className="text-red-600 hover:text-red-800"
                                     >
                                       Delete
                                     </button>
+                                  </div>
+                                </td>
+                                <td className="px-6 py-4 whitespace-nowrap">
+                                  <div className="text-sm text-gray-900">
+                                    {incident.description}
                                   </div>
                                 </td>
                               </tr>
@@ -554,29 +651,49 @@ function Admin() {
                   <table className="w-full">
                     <thead className="bg-gray-50">
                       <tr>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Username</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Email</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Phone</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Admin</th>
-                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Actions</th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Username
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Email
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Phone
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Admin
+                        </th>
+                        <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
+                          Actions
+                        </th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
                       {users.map((user) => (
                         <tr key={user.id} className="hover:bg-gray-50">
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm font-medium text-gray-900">{user.username}</div>
+                            <div className="text-sm font-medium text-gray-900">
+                              {user.username}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-900">{user.email}</div>
+                            <div className="text-sm text-gray-900">
+                              {user.email}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <div className="text-sm text-gray-500">{user.phone || "—"}</div>
+                            <div className="text-sm text-gray-500">
+                              {user.phone || "—"}
+                            </div>
                           </td>
                           <td className="px-6 py-4 whitespace-nowrap">
-                            <span className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
-                              user.is_admin ? "bg-green-100 text-green-800" : "bg-gray-100 text-gray-800"
-                            }`}>
+                            <span
+                              className={`inline-flex px-3 py-1 text-xs font-semibold rounded-full ${
+                                user.is_admin
+                                  ? "bg-green-100 text-green-800"
+                                  : "bg-gray-100 text-gray-800"
+                              }`}
+                            >
                               {user.is_admin ? "Yes" : "No"}
                             </span>
                           </td>
@@ -598,7 +715,9 @@ function Admin() {
 
             {selectedTab === "Settings" && (
               <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
-                <h2 className="text-xl font-semibold text-gray-900 mb-6">System Settings</h2>
+                <h2 className="text-xl font-semibold text-gray-900 mb-6">
+                  System Settings
+                </h2>
                 <div className="space-y-6">
                   {/* <div>
                     <h3 className="text-lg font-medium text-gray-900 mb-3">Notification Settings</h3>
@@ -619,10 +738,14 @@ function Admin() {
                   </div> */}
 
                   <div>
-                    <h3 className="text-lg font-medium text-gray-900 mb-3">System Preferences</h3>
+                    <h3 className="text-lg font-medium text-gray-900 mb-3">
+                      System Preferences
+                    </h3>
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Default Incident Status</label>
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Default Incident Status
+                        </label>
                         <select className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500">
                           <option>Pending</option>
                           <option>Reviewing</option>
@@ -631,8 +754,14 @@ function Admin() {
                         </select>
                       </div>
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Items Per Page</label>
-                        <input type="number" className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500" defaultValue="10" />
+                        <label className="block text-sm font-medium text-gray-700 mb-1">
+                          Items Per Page
+                        </label>
+                        <input
+                          type="number"
+                          className="w-full p-2 border border-gray-300 rounded-md focus:ring-blue-500 focus:border-blue-500"
+                          defaultValue="10"
+                        />
                       </div>
                     </div>
                   </div>
@@ -657,8 +786,10 @@ function Admin() {
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white rounded-xl shadow-lg w-full max-w-4xl">
             <div className="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-              <h3 className="text-xl font-semibold text-gray-900">Incident Media</h3>
-              <button 
+              <h3 className="text-xl font-semibold text-gray-900">
+                Incident Media
+              </h3>
+              <button
                 onClick={() => setShowMediaModal(false)}
                 className="text-gray-500 hover:text-gray-700"
               >
@@ -672,11 +803,14 @@ function Admin() {
                 </div>
               ) : (
                 mediaContent.map((media, index) => (
-                  <div key={index} className="rounded-lg overflow-hidden border border-gray-200">
+                  <div
+                    key={index}
+                    className="rounded-lg overflow-hidden border border-gray-200"
+                  >
                     {media.media_type === "image" ? (
-                      <img 
-                        src={media.file_url} 
-                        alt={`Incident media ${index + 1}`} 
+                      <img
+                        src={media.file_url}
+                        alt={`Incident media ${index + 1}`}
                         className="w-full h-auto object-cover"
                       />
                     ) : (
