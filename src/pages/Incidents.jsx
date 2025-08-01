@@ -393,10 +393,7 @@ function Incidents() {
                   </p>
                 </div>
                 <div className="flex items-center space-x-4">
-                 
-                  <div className="relative">
-                    
-                  </div>
+                  <div className="relative"></div>
                 </div>
               </div>
             </div>
@@ -588,7 +585,11 @@ function Incidents() {
                   ) : (
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                       {incidents.map((incident) => (
-                        <div className="flex justify-between items-center mt-4">
+                        <div
+                          key={incident.id}
+                          className="bg-white rounded-xl shadow border p-4 flex flex-col justify-between h-full"
+                        >
+                          <div className="flex justify-between items-center mt-4">
                             <button
                               onClick={() => viewMedia(incident.id)}
                               className="text-blue-600 hover:text-blue-800 text-sm"
@@ -602,10 +603,6 @@ function Incidents() {
                               <i className="fas fa-edit mr-1"></i> Edit
                             </button>
                           </div>
-                        <div
-                          key={incident.id}
-                          className="bg-white rounded-xl shadow border p-4 flex flex-col justify-between h-full"
-                        >
                           <div>
                             <h4 className="text-lg font-semibold text-gray-800 mb-1">
                               {incident.title}
@@ -654,8 +651,6 @@ function Incidents() {
                               </span>
                             )}
                           </div>
-
-                          
                         </div>
                       ))}
                     </div>
@@ -705,16 +700,16 @@ function Incidents() {
                   ) : (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 p-4">
                       {allIncidents.map((incident) => (
-                        <button
+                        <div
+                          key={incident.id}
+                          className="bg-white rounded-xl shadow border border-gray-200 p-4 flex flex-col"
+                        >
+                          <button
                             onClick={() => viewMedia(incident.id)}
                             className="inline-flex items-center text-blue-600 hover:text-blue-800 text-sm font-medium"
                           >
                             <i className="fas fa-eye mr-1"></i> View Media
                           </button>
-                        <div
-                          key={incident.id}
-                          className="bg-white rounded-xl shadow border border-gray-200 p-4 flex flex-col"
-                        >
                           <h4 className="text-lg font-semibold text-gray-800 mb-1">
                             {incident.title}
                           </h4>
@@ -769,8 +764,6 @@ function Incidents() {
                               Loading map...
                             </span>
                           )}
-
-                          
                         </div>
                       ))}
                     </div>
